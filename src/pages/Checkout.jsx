@@ -57,14 +57,16 @@ export default function Checkout() {
 
     if (cartItems.length === 0) {
         return (
-            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4">
-                <h2 className="text-3xl font-light text-[#2C2826] mb-6">{t('cart.empty')}</h2>
+            <div className="min-h-[60vh] flex flex-col items-center justify-center px-4 text-center">
+                <h2 className="text-3xl font-light text-[#2C2826] mb-6">{t('checkout.empty_cart')}</h2>
                 <button onClick={() => navigate('/')} className="px-8 py-3 bg-[#2C2826] text-white rounded-xl text-[11px] font-bold uppercase tracking-widest hover:bg-[#C4A49A] transition-colors shadow-lg">
-                    {t('nav.regalos')}
+                    {t('checkout.continue_shopping')}
                 </button>
             </div>
         );
     }
+
+    const total = Number(getCartTotal()) || 0;
 
     return (
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
@@ -73,7 +75,7 @@ export default function Checkout() {
                 className="flex items-center gap-2 text-[11px] font-bold uppercase tracking-widest text-[#8A7369] hover:text-[#2C2826] transition-colors mb-10 group"
             >
                 <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
-                {t('footer.back_to_top')}
+                {t('checkout.back_to_cart')}
             </button>
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -191,11 +193,11 @@ export default function Checkout() {
                             {cartItems.map((item) => (
                                 <div key={item.id} className="flex gap-4">
                                     <div className="w-20 h-20 rounded-xl bg-[#FCFAF8] border border-[#F1EBE6] p-2 shrink-0">
-                                        <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                                        <img src={item.image_url || item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                                     </div>
                                     <div className="flex flex-col justify-center">
                                         <h4 className="text-[13px] font-bold text-[#2C2826] leading-tight mb-1 uppercase tracking-tight">{item.name}</h4>
-                                        <p className="text-[11px] text-[#8A7369] uppercase font-bold tracking-widest">{item.quantity} x {item.price} €</p>
+                                        <p className="text-[11px] text-[#8A7369] uppercase font-bold tracking-widest">{item.quantity} x {Number(item.price || 0).toFixed(2)} {t('currency')}</p>
                                     </div>
                                 </div>
                             ))}
@@ -204,7 +206,7 @@ export default function Checkout() {
                         <div className="space-y-4 mb-10 pt-6 border-t border-[#F1EBE6]">
                             <div className="flex justify-between text-sm text-[#8A7369]">
                                 <span>{t('cart.subtotal')}</span>
-                                <span>{getCartTotal()} €</span>
+                                <span>{total.toFixed(2)} {t('currency')}</span>
                             </div>
                             <div className="flex justify-between text-sm text-[#8A7369]">
                                 <span>{t('cart.shipping')}</span>
@@ -212,7 +214,7 @@ export default function Checkout() {
                             </div>
                             <div className="flex justify-between text-xl font-bold text-[#2C2826] pt-4 border-t border-[#F1EBE6]">
                                 <span>{t('cart.total')}</span>
-                                <span>{getCartTotal()} €</span>
+                                <span>{total.toFixed(2)} {t('currency')}</span>
                             </div>
                         </div>
 

@@ -23,7 +23,7 @@ export default function Categoria() {
     useEffect(() => {
         setSearchTerm(searchParams.get('q') || '');
     }, [searchParams]);
-    const [visibleCount, setVisibleCount] = useState(8);
+    const [visibleCount, setVisibleCount] = useState(12);
     const [activeFilter, setActiveFilter] = useState(null);
     const [selectedFilters, setSelectedFilters] = useState({
         price: null,
@@ -35,7 +35,7 @@ export default function Categoria() {
 
     const filterOptions = {
         price: ["0 - 25€", "25€ - 50€", "50€ - 75€", "75€+"],
-        skin_tone: [t('history.purity'), "Medio", "Bronceado", "Oscuro"],
+        skin_tone: ["Claro", "Medio", "Bronceado", "Oscuro"],
         color_name: ["Nude", "Rosado", "Rojo", "Tierra"],
         product_type: ["serums", "cremas", "limpiadores", "solares", "labios", "hidratacion"]
     };
@@ -70,10 +70,15 @@ export default function Categoria() {
 
     useEffect(() => {
         window.scrollTo(0, 0);
-        setVisibleCount(8);
+        setVisibleCount(12);
         setSelectedFilters({ price: null, skin_tone: null, color_name: null, product_type: null });
         setSortOption(null);
     }, [slug]);
+
+    useEffect(() => {
+        // Reset visible count whenever filters or search change so pagination stays consistent.
+        setVisibleCount(12);
+    }, [searchTerm, selectedFilters, sortOption]);
 
     const { lang, translateProduct } = useLanguage();
 
@@ -155,7 +160,7 @@ export default function Categoria() {
         }));
     };
 
-    const normalizedSlugForTitle = slug === 'rosto' ? 'rostro' : (slug === 'maquilhagem' || slug === 'maquillagem' ? 'maquillaje' : (slug === 'solares' ? 'manos_pies' : (slug || 'todos').toLowerCase().replace(/-/g, '_')));
+    const normalizedSlugForTitle = slug === 'rosto' ? 'rostro' : (slug === 'maquilhagem' || slug === 'maquillagem' ? 'maquillaje' : (slug || 'todos').toLowerCase().replace(/-/g, '_'));
 
     // Robust Title Sanitization helper
     const getSafeTitle = () => {
@@ -206,6 +211,18 @@ export default function Categoria() {
         hombre: {
             img: "https://images.unsplash.com/photo-1616117403483-36e2f1837ac6?auto=format&fit=crop&q=80&w=2000",
             tagline: t('categories.hombre.tagline')
+        },
+        solares: {
+            img: "https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=2000",
+            tagline: t('categories.solares.tagline')
+        },
+        perfumes: {
+            img: "https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=2000",
+            tagline: t('categories.perfumes.tagline')
+        },
+        outlet: {
+            img: "https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=2000",
+            tagline: t('categories.outlet.tagline')
         },
         default: {
             img: "https://images.unsplash.com/photo-1552046122-03184de85e08?auto=format&fit=crop&w=2000",
@@ -280,8 +297,8 @@ export default function Categoria() {
                                 />
                                 <Search size={15} className="absolute left-0 top-1/2 -translate-y-1/2 text-[#9C9490]" />
                             </div>
-                            <div className="hidden lg:flex items-center gap-8">
-                                <span className="text-[12px] text-[#8A7369] font-medium uppercase tracking-wider">{filteredAndSortedProducts.length} {t('common.items')}</span>
+                            <div className="flex items-center gap-4 md:gap-8">
+                                <span className="text-[12px] text-[#8A7369] font-medium uppercase tracking-wider hidden sm:inline">{filteredAndSortedProducts.length} {t('common.items')}</span>
                                 <button
                                     onClick={() => setActiveFilter(activeFilter === 'sort' ? null : 'sort')}
                                     className={`flex items-center gap-2 text-[11px] font-bold uppercase tracking-[0.15em] transition-all
@@ -373,7 +390,7 @@ export default function Categoria() {
                                         className="w-full bg-[#2C2826] text-white py-4 text-[11px] font-bold uppercase tracking-[0.15em] hover:bg-black transition-colors rounded-2xl flex items-center justify-center gap-2 shadow-2xl"
                                     >
                                         <ShoppingBag size={14} strokeWidth={2} />
-                                        {t('cart.add')}
+                                        {t('common.add')}
                                     </button>
                                 </div>
                             </div>
@@ -385,8 +402,8 @@ export default function Categoria() {
                                 </div>
                                 <Link to={`/producto/${product.id}`} className="block text-[15px] font-normal text-[#2C2826] mb-2 hover:text-[#C4A49A] transition-colors leading-tight uppercase tracking-tight">{product.name}</Link>
                                 <div className="flex items-baseline gap-3">
-                                    <span className="text-[16px] font-normal text-[#2C2826]">{product.price.toFixed(2)} €</span>
-                                    {product.oldPrice && <span className="text-[13px] text-[#A69B97] line-through font-light">{product.oldPrice.toFixed(2)} €</span>}
+                                    <span className="text-[16px] font-normal text-[#2C2826]">{Number(product.manual_price || product.price || 0).toFixed(2)} {t('currency')}</span>
+                                    {product.oldPrice && <span className="text-[13px] text-[#A69B97] line-through font-light">{Number(product.oldPrice).toFixed(2)} {t('currency')}</span>}
                                 </div>
                             </div>
                         </motion.div>
@@ -396,7 +413,7 @@ export default function Categoria() {
                 {visibleCount < filteredAndSortedProducts.length && (
                     <div className="mt-20 flex justify-center">
                         <motion.button
-                            onClick={() => setVisibleCount(prev => prev + 4)}
+                            onClick={() => setVisibleCount(prev => prev + 12)}
                             whileHover={{ scale: 1.05 }}
                             whileTap={{ scale: 0.95 }}
                             className="group flex flex-col items-center gap-4 focus:outline-none"

@@ -6,24 +6,13 @@ import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useCRO } from '../context/CROContext';
 
-const topNavKeys = ["rostro", "maquillaje", "cuerpo", "cabello", "perfumes", "outlet"];
+const topNavKeys = ["rostro", "cuerpo", "cabello", "perfumes", "outlet"];
 
 // Mega Menu Data using translation keys with static, high-quality images
 const megaMenuData = {
     "rostro": [
-        { name: "limpiadores", imgs: ["https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=300"] },
-        { name: "tonicos", imgs: ["https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=300"] },
-        { name: "serums", imgs: ["https://images.unsplash.com/photo-1610450531548-73587b14d557?auto=format&fit=crop&q=80&w=300"] },
-        { name: "cremas", imgs: ["https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=300"] },
-        { name: "contorno", imgs: ["https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=300"] },
-        { name: "mascarillas", imgs: ["https://images.unsplash.com/photo-1586495777744-4413f21062fa?auto=format&fit=crop&q=80&w=300"] }
-    ],
-    "maquillaje": [
-        { name: "base", imgs: ["https://images.unsplash.com/photo-1599733594230-6b823276abcc?auto=format&fit=crop&q=80&w=300"] },
-        { name: "correctores", imgs: ["https://images.unsplash.com/photo-1599305090598-fe179d501227?auto=format&fit=crop&q=80&w=300"] },
-        { name: "polvo", imgs: ["https://images.unsplash.com/photo-1629198688000-71f23e745b6e?auto=format&fit=crop&q=80&w=300"] },
-        { name: "rubor", imgs: ["https://images.unsplash.com/photo-1583241475880-083f84372725?auto=format&fit=crop&q=80&w=300"] },
-        { name: "labios", imgs: ["https://images.unsplash.com/photo-1512496015851-a1c8d1720d29?auto=format&fit=crop&q=80&w=300"] },
+        { name: "cuidado_facial", imgs: ["https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=300"], items: ["limpiadores", "tonicos", "serums", "cremas", "contorno", "mascarillas"] },
+        { name: "maquillaje_facial", imgs: ["https://images.unsplash.com/photo-1512496015851-a1c8d1720d29?auto=format&fit=crop&q=80&w=300"], items: ["base", "correctores", "polvo", "rubor", "labios"] },
     ],
     "cuerpo": [
         { name: "higiene", imgs: ["https://images.unsplash.com/photo-1607006342411-0a6a7c36c649?auto=format&fit=crop&q=80&w=300"] },
@@ -32,9 +21,8 @@ const megaMenuData = {
         { name: "manos_pies", imgs: ["https://images.unsplash.com/photo-1519415510236-855bc9808d4e?auto=format&fit=crop&q=80&w=300"] },
     ],
     "cabello": [
-        { name: "lavado", imgs: ["https://images.unsplash.com/photo-1532713109643-df1a5ca4cabd?auto=format&fit=crop&q=80&w=300"] },
-        { name: "tratamiento", imgs: ["https://images.unsplash.com/photo-1527799822367-3de88bc0c4a3?auto=format&fit=crop&q=80&w=300"] },
-        { name: "styling", imgs: ["https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=300"] },
+        { name: "tratamiento", imgs: ["https://images.unsplash.com/photo-1527799822367-3de88bc0c4a3?auto=format&fit=crop&q=80&w=300"], items: ["lavado", "tratamiento"] },
+        { name: "ferramentas", imgs: ["https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=300"], items: ["styling", "cepillos", "planchas"] },
     ],
     "perfumes": [
         { name: "femeninos", imgs: ["https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=300"] },
@@ -399,11 +387,11 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
                                                             <Link to={`/categoria/${catPath}`} onClick={() => setActiveMenu(null)}>{t(`nav.${item.name}`)}</Link>
                                                         </h4>
                                                         <div className="flex flex-col gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                            {t(`nav.sub_${item.name}`) instanceof Array ? t(`nav.sub_${item.name}`).map((subItem, sIdx) => (
-                                                                <Link key={sIdx} to={`/categoria/${catPath}?q=${encodeURIComponent(subItem)}`} onClick={() => setActiveMenu(null)} className="text-[12px] text-[#5C534F] font-light hover:text-[#C4A49A] transition-colors truncate">
-                                                                    {subItem}
+                                                            {(item.items || [item.name]).map((itName, sIdx) => (
+                                                                <Link key={sIdx} to={`/categoria/${itName === 'ultimas' ? 'outlet' : (itName === 'promociones' ? 'outlet' : (itName === 'manos_pies' ? 'manos-pies' : itName))}`} onClick={() => setActiveMenu(null)} className="text-[12px] text-[#5C534F] font-light hover:text-[#C4A49A] transition-colors truncate">
+                                                                    {t(`nav.${itName}`)}
                                                                 </Link>
-                                                            )) : null}
+                                                            ))}
                                                         </div>
                                                     </>
                                                 );
@@ -479,9 +467,9 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
 
                             <div className="p-6 bg-[#FCFAF8] border-t border-[#F1EBE6]">
                                 <div className="flex items-center gap-4 text-[#8A7369] text-xs font-bold uppercase tracking-widest">
-                                    <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>{t('profile.my_account')}</Link>
+                                    <Link to="/profile" onClick={() => setIsMobileMenuOpen(false)}>{t('profile.account')}</Link>
                                     <span className="opacity-20">|</span>
-                                    <Link to="/favorites" onClick={() => setIsMobileMenuOpen(false)}>{t('common.favorites')}</Link>
+                                    <button type="button" onClick={() => { setIsMobileMenuOpen(false); onFavoritesClick(); }}>{t('common.favorites')}</button>
                                 </div>
                             </div>
                         </motion.div>

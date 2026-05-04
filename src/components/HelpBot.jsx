@@ -5,10 +5,8 @@ import { useLanguage } from '../context/LanguageContext';
 
 export default function HelpBot() {
     const [isOpen, setIsOpen] = useState(false);
-    const { t } = useLanguage();
-    const [messages, setMessages] = useState([
-        { id: 1, text: t('helpbot.welcome'), isBot: true }
-    ]);
+    const { t, lang } = useLanguage();
+    const [messages, setMessages] = useState([{ id: 1, isBot: true, key: 'helpbot.welcome' }]);
     const [input, setInput] = useState('');
     const messagesEndRef = useRef(null);
 
@@ -20,16 +18,23 @@ export default function HelpBot() {
         scrollToBottom();
     }, [messages]);
 
-    const getBotResponse = (text) => {
+    // Reset welcome message on language change so existing intro re-translates.
+    useEffect(() => {
+        setMessages(prev => prev.map(m => (m.id === 1 ? { ...m, key: 'helpbot.welcome' } : m)));
+    }, [lang]);
+
+    const renderMsg = (msg) => msg.key ? t(msg.key) : msg.text;
+
+    const getBotResponseKey = (text) => {
         const lowerText = text.toLowerCase();
-        if (lowerText.includes('olá') || lowerText.includes('hola') || lowerText.includes('bom dia') || lowerText.includes('buenos días')) return t('helpbot.faq.greeting') || "¡Hola! Soy tu asistente de Beauthé. ¿En qué posso ayudarte hoy?";
-        if (lowerText.includes('envio') || lowerText.includes('entrega') || lowerText.includes('frete') || lowerText.includes('portes')) return t('helpbot.faq.shipping');
-        if (lowerText.includes('pago') || lowerText.includes('pagamento') || lowerText.includes('cartão') || lowerText.includes('tarjeta')) return t('helpbot.faq.payments');
-        if (lowerText.includes('devolu') || lowerText.includes('retorno') || lowerText.includes('troca') || lowerText.includes('cambio')) return t('helpbot.faq.returns');
-        if (lowerText.includes('vegano') || lowerText.includes('animal') || lowerText.includes('natural')) return t('helpbot.faq.products');
-        if (lowerText.includes('pele') || lowerText.includes('piel') || lowerText.includes('rostro') || lowerText.includes('rosto')) return "Para tu tipo de piel, recomiendo empezar con uno de nuestros protocolos personalizados. ¿Has probado nuestro nuevo Quiz de Piel?";
-        if (lowerText.includes('maquiagem') || lowerText.includes('maquillaje') || lowerText.includes('batom') || lowerText.includes('labial')) return "Nuestra línea de maquillaje 'Essential' es perfecta para un look natural y radiante. ¿Buscas algo para labios o rostro?";
-        return t('helpbot.faq.unknown');
+        if (lowerText.includes('olá') || lowerText.includes('hola') || lowerText.includes('bom dia') || lowerText.includes('buenos días') || lowerText.includes('hi') || lowerText.includes('hello')) return 'helpbot.faq.greeting';
+        if (lowerText.includes('envio') || lowerText.includes('entrega') || lowerText.includes('frete') || lowerText.includes('portes') || lowerText.includes('shipping') || lowerText.includes('delivery')) return 'helpbot.faq.shipping';
+        if (lowerText.includes('pago') || lowerText.includes('pagamento') || lowerText.includes('cartão') || lowerText.includes('tarjeta') || lowerText.includes('payment') || lowerText.includes('card')) return 'helpbot.faq.payments';
+        if (lowerText.includes('devolu') || lowerText.includes('retorno') || lowerText.includes('troca') || lowerText.includes('cambio') || lowerText.includes('return')) return 'helpbot.faq.returns';
+        if (lowerText.includes('vegano') || lowerText.includes('vegan') || lowerText.includes('animal') || lowerText.includes('natural') || lowerText.includes('cruelty')) return 'helpbot.faq.products';
+        if (lowerText.includes('pele') || lowerText.includes('piel') || lowerText.includes('skin') || lowerText.includes('rostro') || lowerText.includes('rosto') || lowerText.includes('face')) return 'helpbot.faq.skin';
+        if (lowerText.includes('maquiagem') || lowerText.includes('maquillaje') || lowerText.includes('makeup') || lowerText.includes('batom') || lowerText.includes('labial') || lowerText.includes('lipstick')) return 'helpbot.faq.makeup';
+        return 'helpbot.faq.unknown';
     };
 
     const handleSend = () => {
@@ -37,16 +42,17 @@ export default function HelpBot() {
 
         const userMsg = { id: Date.now(), text: input, isBot: false };
         setMessages(prev => [...prev, userMsg]);
+        const inputCopy = input;
         setInput('');
 
         setTimeout(() => {
-            const botMsg = { id: Date.now() + 1, text: getBotResponse(input), isBot: true };
+            const botMsg = { id: Date.now() + 1, key: getBotResponseKey(inputCopy), isBot: true };
             setMessages(prev => [...prev, botMsg]);
         }, 800);
     };
 
     return (
-        <div className="fixed bottom-24 md:bottom-6 right-6 z-[100]">
+        <div className="fixed bottom-6 right-6 z-[55]">
             <AnimatePresence>
                 {isOpen && (
                     <motion.div
@@ -54,7 +60,7 @@ export default function HelpBot() {
                         animate={{ opacity: 1, scale: 1, y: 0, rotate: 0 }}
                         exit={{ opacity: 0, scale: 0.9, y: 30, rotate: -2 }}
                         transition={{ type: 'spring', damping: 20, stiffness: 200 }}
-                        className="absolute bottom-20 right-0 w-[350px] h-[580px] bg-white rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col border border-[#F1EBE6]"
+                        className="absolute bottom-20 right-0 w-[350px] max-w-[calc(100vw-3rem)] h-[min(580px,calc(100vh-8rem))] bg-white rounded-[2rem] shadow-[0_20px_60px_rgba(0,0,0,0.15)] overflow-hidden flex flex-col border border-[#F1EBE6]"
                     >
                         {/* Header */}
                         <div className="bg-[#2C2826] p-7 text-white flex items-center justify-between">
@@ -67,7 +73,7 @@ export default function HelpBot() {
                                     <h3 className="text-[14px] font-bold uppercase tracking-tight">{t('helpbot.title')}</h3>
                                     <div className="flex items-center gap-1.5 mt-0.5">
                                         <div className="w-1.5 h-1.5 bg-green-500 rounded-full"></div>
-                                        <span className="text-[10px] text-white/50 uppercase tracking-widest font-medium">Asistente Inteligente</span>
+                                        <span className="text-[10px] text-white/50 uppercase tracking-widest font-medium">{t('helpbot.subtitle')}</span>
                                     </div>
                                 </div>
                             </div>
@@ -91,7 +97,7 @@ export default function HelpBot() {
                                     <div className={`max-w-[85%] p-4 rounded-2xl text-[13px] leading-relaxed shadow-sm
                                         ${msg.isBot ? 'bg-white text-[#2C2826] border border-[#F1EBE6] rounded-tl-none' : 'bg-[#C4A49A] text-white rounded-tr-none'}
                                     `}>
-                                        {msg.text}
+                                        {renderMsg(msg)}
                                     </div>
                                 </motion.div>
                             ))}
@@ -104,7 +110,7 @@ export default function HelpBot() {
                                 type="text"
                                 value={input}
                                 onChange={(e) => setInput(e.target.value)}
-                                onKeyPress={(e) => e.key === 'Enter' && handleSend()}
+                                onKeyDown={(e) => e.key === 'Enter' && handleSend()}
                                 placeholder={t('helpbot.placeholder')}
                                 className="flex-1 bg-[#FCFAF8] border border-[#F1EBE6] rounded-2xl px-5 py-3.5 text-[14px] outline-none focus:border-[#C4A49A] transition-all placeholder:text-[#9C9490]"
                             />
@@ -125,9 +131,9 @@ export default function HelpBot() {
                 whileHover={{ scale: 1.05, rotate: 5 }}
                 whileTap={{ scale: 0.95, rotate: -5 }}
                 onClick={() => setIsOpen(!isOpen)}
+                aria-label={t('helpbot.title')}
                 className="w-16 h-16 bg-[#2C2826] text-white rounded-full flex items-center justify-center shadow-[0_10px_30px_rgba(44,40,38,0.3)] hover:shadow-[#C4A49A]/30 transition-all border-4 border-white relative group"
             >
-                <div className="absolute -top-1 -right-1 w-5 h-5 bg-[#C4A49A] border-2 border-white rounded-full flex items-center justify-center text-[8px] font-bold text-white shadow-sm transition-transform duration-300 group-hover:scale-110">1</div>
                 <AnimatePresence mode="wait">
                     <motion.div
                         key={isOpen ? 'close' : 'open'}

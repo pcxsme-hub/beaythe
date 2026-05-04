@@ -21,7 +21,7 @@ export default function FavoritesDrawer({ isOpen, onClose }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/40 z-[60] backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/40 z-[80] backdrop-blur-sm"
                     />
 
                     <motion.div
@@ -29,7 +29,7 @@ export default function FavoritesDrawer({ isOpen, onClose }) {
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'tween', duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                        className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white z-[70] shadow-2xl flex flex-col"
+                        className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white z-[90] shadow-2xl flex flex-col"
                     >
                         <div className="flex items-center justify-between p-6 border-b border-[#F1EBE6]">
                             <div className="flex flex-col">
@@ -81,17 +81,17 @@ export default function FavoritesDrawer({ isOpen, onClose }) {
                                             className="flex gap-4 group"
                                         >
                                             <div className="w-24 h-32 rounded-2xl overflow-hidden border border-[#F1EBE6] bg-white shrink-0">
-                                                <img src={product.image} alt={product.name} className="w-full h-full object-cover" />
+                                                <img src={product.image_url || product.image} alt={product.name} className="w-full h-full object-contain mix-blend-multiply p-2" />
                                             </div>
                                             <div className="flex-1 flex flex-col justify-between py-1">
                                                 <div>
-                                                    <h4 className="text-[14px] font-bold text-[#2C2826] leading-tight uppercase mb-1">{product.name}</h4>
-                                                    <p className="text-[12px] text-[#8A7369]">R$ {
-                                                        (typeof product.price === 'string'
+                                                    <h4 className="text-[14px] font-bold text-[#2C2826] leading-tight uppercase mb-1 truncate">{product.name}</h4>
+                                                    <p className="text-[12px] text-[#8A7369]">{
+                                                        Number(typeof product.price === 'string'
                                                             ? parseFloat(product.price.replace(',', '.'))
-                                                            : product.price
+                                                            : product.price || 0
                                                         ).toFixed(2)
-                                                    }</p>
+                                                    } {t('currency')}</p>
                                                 </div>
                                                 <div className="flex items-center gap-3">
                                                     <button

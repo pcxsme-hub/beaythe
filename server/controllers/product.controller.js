@@ -27,14 +27,15 @@ export const importFromDropea = async (req, res) => {
         // Persiste no DB Local (Fallback Manual Preservado)
         const product = await prisma.product.upsert({
             where: { dropea_id: dropeaId },
-            update: { price: finalPrice, stock }, // Atualiza estoque e re-precifica
+            update: { price: finalPrice, stock, is_active: true }, // Atualiza estoque e re-precifica
             create: {
                 dropea_id: dropeaId,
                 name,
                 price: finalPrice,
                 stock,
                 description,
-                image_url
+                image_url,
+                is_active: true
             }
         });
 
@@ -100,14 +101,15 @@ export const bulkImportFromDropea = async (req, res) => {
             try {
                 await prisma.product.upsert({
                     where: { dropea_id: prd.id.toString() },
-                    update: { price: finalPrice, stock: parseInt(prd.stock_available) || 0 },
+                    update: { price: finalPrice, stock: parseInt(prd.stock_available) || 0, is_active: true },
                     create: {
                         dropea_id: prd.id.toString(),
                         name: prd.name,
                         price: finalPrice,
                         stock: parseInt(prd.stock_available) || 0,
                         description: prd.description || prd.name,
-                        image_url: prd.image || ''
+                        image_url: prd.image || '',
+                        is_active: true
                     }
                 });
                 successCount++;

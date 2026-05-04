@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../context/LanguageContext';
 import { getProducts } from '../admin/services/db';
-import { ShoppingBag, Star, Heart, Plus } from 'lucide-react';
+import { ShoppingBag, Star, Heart, Plus, ArrowRight } from 'lucide-react';
 import { useCart } from '../context/CartContext';
 import { useFavorites } from '../context/FavoritesContext';
 import { Link } from 'react-router-dom';
@@ -16,14 +16,14 @@ export default function ProductTabs() {
     const [loading, setLoading] = useState(true);
 
     const tabs = [
-        { id: 'ALL', label: t('nav.all_products') },
-        { id: 'gels', label: 'Gels', match: ['gel', 'limpiador', 'cleaning'] },
-        { id: 'serums', label: 'Sérums', match: ['serum', 'sérum', 'concentrado'] },
-        { id: 'cremas', label: 'Cremas', match: ['crema', 'creme', 'hidratante'] },
-        { id: 'ojos', label: 'Ojos', match: ['contorno', 'ojos', 'olhos'] },
-        { id: 'labios', label: 'Labios', match: ['labios', 'lips', 'batom'] },
-        { id: 'cabello', label: t('nav.cabello') || 'Cabello', match: ['cabello', 'cabelo', 'hair', 'capilar', 'champô', 'champu'] },
-        { id: 'manos-pies', label: t('nav.manos_pies') || 'Manos y Pies', match: ['mano', 'pie', 'mão', 'pe', 'unha', 'uña', 'hand', 'foot', 'nails'] }
+        { id: 'ALL', label: t('nav.all_products'), slug: 'todos' },
+        { id: 'gels', label: 'Gels', match: ['gel', 'limpiador', 'cleaning'], slug: 'limpiadores' },
+        { id: 'serums', label: 'Sérums', match: ['serum', 'sérum', 'concentrado'], slug: 'serums' },
+        { id: 'cremas', label: 'Cremas', match: ['crema', 'creme', 'hidratante'], slug: 'cremas' },
+        { id: 'ojos', label: 'Ojos', match: ['contorno', 'ojos', 'olhos'], slug: 'contorno' },
+        { id: 'labios', label: 'Labios', match: ['labios', 'lips', 'batom'], slug: 'labios' },
+        { id: 'cabello', label: t('nav.cabello') || 'Cabello', match: ['cabello', 'cabelo', 'hair', 'capilar', 'champô', 'champu'], slug: 'cabello' },
+        { id: 'manos-pies', label: t('nav.manos_pies') || 'Manos y Pies', match: ['mano', 'pie', 'mão', 'pe', 'unha', 'uña', 'hand', 'foot', 'nails'], slug: 'manos-pies' }
     ];
 
 
@@ -62,19 +62,43 @@ export default function ProductTabs() {
                     </h2>
 
                     {/* Tabs Navigation */}
-                    <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-                        {tabs.map((tab) => (
-                            <button
-                                key={tab.id}
-                                onClick={() => setActiveTab(tab.id)}
-                                className={`px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
-                                    ? 'bg-[#2C2826] text-white shadow-xl scale-105'
-                                    : 'bg-[#FCFAF8] text-[#8A7369] hover:bg-[#F1EBE6]'
-                                    }`}
-                            >
-                                {tab.label}
-                            </button>
-                        ))}
+                    <div className="flex flex-wrap items-center justify-center gap-4 md:gap-8 w-full">
+                        <div className="flex flex-wrap justify-center gap-4 md:gap-8 flex-1">
+                            {tabs.map((tab) => (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => setActiveTab(tab.id)}
+                                    className={`px-6 py-3 rounded-2xl text-[11px] font-bold uppercase tracking-widest transition-all duration-300 ${activeTab === tab.id
+                                        ? 'bg-[#2C2826] text-white shadow-xl scale-105'
+                                        : 'bg-[#FCFAF8] text-[#8A7369] hover:bg-[#F1EBE6]'
+                                        }`}
+                                >
+                                    {tab.label}
+                                </button>
+                            ))}
+                        </div>
+
+                        {/* See More Seta */}
+                        <AnimatePresence>
+                            {activeTab !== 'ALL' && (
+                                <motion.div
+                                    initial={{ opacity: 0, x: -20 }}
+                                    animate={{ opacity: 1, x: 0 }}
+                                    exit={{ opacity: 0, x: -20 }}
+                                    className="hidden md:flex items-center"
+                                >
+                                    <Link
+                                        to={`/categoria/${tabs.find(t => t.id === activeTab)?.slug}`}
+                                        className="flex items-center gap-3 text-[#C4A49A] hover:text-[#2C2826] transition-colors group px-4 py-2"
+                                    >
+                                        <span className="text-[11px] font-bold uppercase tracking-[0.2em]">{t('common.view_all') || 'Ver Tudo'}</span>
+                                        <div className="w-10 h-10 rounded-full border border-[#C4A49A]/20 flex items-center justify-center group-hover:bg-[#C4A49A] group-hover:text-white transition-all duration-500">
+                                            <ArrowRight size={18} />
+                                        </div>
+                                    </Link>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </div>
                 </div>
 

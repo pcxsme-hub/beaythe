@@ -27,7 +27,7 @@ export default function Historia() {
     ];
 
     return (
-        <div className="pt-20">
+        <div>
             {/* Hero Section */}
             <section className="relative h-[70vh] flex items-center justify-center overflow-hidden bg-[#2C2826]">
                 <img

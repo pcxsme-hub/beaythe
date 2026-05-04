@@ -9,14 +9,14 @@ export default function BackToTop() {
 
     useEffect(() => {
         const toggleVisibility = () => {
-            if (window.pageYOffset > 300) {
+            if (window.scrollY > 300) {
                 setIsVisible(true);
             } else {
                 setIsVisible(false);
             }
         };
 
-        window.addEventListener('scroll', toggleVisibility);
+        window.addEventListener('scroll', toggleVisibility, { passive: true });
         return () => window.removeEventListener('scroll', toggleVisibility);
     }, []);
 
@@ -37,7 +37,7 @@ export default function BackToTop() {
                     whileHover={{ scale: 1.1, backgroundColor: '#2C2826', color: '#FFFFFF' }}
                     whileTap={{ scale: 0.9 }}
                     onClick={scrollToTop}
-                    className="fixed bottom-8 left-8 z-[100] w-12 h-12 rounded-full bg-white shadow-2xl border border-[#F1EBE6] text-[#C4A49A] flex items-center justify-center transition-all group"
+                    className="fixed bottom-8 left-6 md:left-8 z-[55] w-12 h-12 rounded-full bg-white shadow-2xl border border-[#F1EBE6] text-[#C4A49A] flex items-center justify-center transition-all group"
                     title={t('common.back_to_top')}
                 >
                     <ChevronUp size={24} strokeWidth={1.5} />

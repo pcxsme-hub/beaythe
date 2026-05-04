@@ -18,16 +18,14 @@ export default function Profile() {
 
     // User State
     const [userData, setUserData] = useState({
-        name: "Rebecca Pedro",
-        email: "repe.contato@gmail.com"
+        name: t('profile.user_default_name'),
+        email: t('profile.user_default_email')
     });
     const [isEditingPersonal, setIsEditingPersonal] = useState(false);
     const [tempUser, setTempUser] = useState({ ...userData });
 
     // Addresses State
-    const [addresses, setAddresses] = useState([
-        { id: 1, title: "Principal", street: "Rua das Flores, 123", city: "Lisboa", postal: "1200-001", country: "Portugal" }
-    ]);
+    const [addresses, setAddresses] = useState([]);
     const [isAddingAddress, setIsAddingAddress] = useState(false);
     const [editingAddressId, setEditingAddressId] = useState(null);
     const [newAddress, setNewAddress] = useState({ title: '', street: '', city: '', postal: '', country: '' });
@@ -93,7 +91,7 @@ export default function Profile() {
                             onClick={() => setActiveTab('track')}
                             className={`pb-4 text-[13px] font-bold uppercase tracking-widest transition-all relative ${activeTab === 'track' ? 'text-[#2C2826]' : 'text-[#A69B97] hover:text-[#C4A49A]'}`}
                         >
-                            Rastrear Encomenda
+                            {t('profile.track_order')}
                             {activeTab === 'track' && <motion.div layoutId="tab-underline" className="absolute bottom-0 left-0 w-full h-0.5 bg-[#2C2826]" />}
                         </button>
                     </div>
@@ -124,7 +122,7 @@ export default function Profile() {
                                 onClick={() => setActiveTab('track')}
                                 className={`flex items-center gap-3 px-6 py-4 rounded-2xl transition-all text-left text-[13px] font-bold ${activeTab === 'track' ? 'bg-white border-[#F1EBE6] border shadow-sm text-[#2C2826]' : 'text-[#8A7369] hover:bg-white hover:border-[#F1EBE6] border border-transparent'}`}
                             >
-                                <Truck size={18} className={activeTab === 'track' ? 'text-[#C4A49A]' : ''} /> Rastrear Encomenda
+                                <Truck size={18} className={activeTab === 'track' ? 'text-[#C4A49A]' : ''} /> {t('profile.track_order')}
                             </button>
                             <button className="flex items-center gap-3 px-6 py-4 rounded-2xl text-[#8A7369] text-[13px] font-medium hover:bg-white hover:border-[#F1EBE6] transition-all border border-transparent text-left">
                                 <Settings size={18} /> {t('profile.settings')}
@@ -138,7 +136,7 @@ export default function Profile() {
                     {/* Main Content Area */}
                     <div className="lg:col-span-9 space-y-8">
                         <h2 className="text-4xl font-black text-[#2C2826] tracking-tighter mb-4">
-                            {activeTab === 'profile' ? t('profile.account') : activeTab === 'track' ? 'Rastrear Encomenda' : t('profile.orders')}
+                            {activeTab === 'profile' ? t('profile.account') : activeTab === 'track' ? t('profile.track_order') : t('profile.orders')}
                         </h2>
 
                         {activeTab === 'profile' ? (
@@ -185,7 +183,7 @@ export default function Profile() {
                                             )}
                                         </div>
                                         <div>
-                                            <p className="text-[11px] font-bold text-[#A69B97] uppercase tracking-[0.2em] mb-2">E-mail</p>
+                                            <p className="text-[11px] font-bold text-[#A69B97] uppercase tracking-[0.2em] mb-2">{t('auth.email_label')}</p>
                                             {isEditingPersonal ? (
                                                 <input
                                                     type="email"
@@ -259,7 +257,7 @@ export default function Profile() {
                                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                                                     <div className="md:col-span-2">
                                                         <input
-                                                            placeholder="Título (Ex: Casa, Trabalho)"
+                                                            placeholder={t('profile.address_form.label')}
                                                             value={newAddress.title}
                                                             onChange={(e) => setNewAddress({ ...newAddress, title: e.target.value })}
                                                             className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#C4A49A]"
@@ -267,24 +265,32 @@ export default function Profile() {
                                                     </div>
                                                     <div className="md:col-span-2">
                                                         <input
-                                                            placeholder="Rua e Número"
+                                                            placeholder={t('profile.address_form.street')}
                                                             value={newAddress.street}
                                                             onChange={(e) => setNewAddress({ ...newAddress, street: e.target.value })}
                                                             className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#C4A49A]"
                                                         />
                                                     </div>
                                                     <input
-                                                        placeholder="Cidade"
+                                                        placeholder={t('profile.address_form.city')}
                                                         value={newAddress.city}
                                                         onChange={(e) => setNewAddress({ ...newAddress, city: e.target.value })}
                                                         className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#C4A49A]"
                                                     />
                                                     <input
-                                                        placeholder="Código Postal"
+                                                        placeholder={t('profile.address_form.postal')}
                                                         value={newAddress.postal}
                                                         onChange={(e) => setNewAddress({ ...newAddress, postal: e.target.value })}
                                                         className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#C4A49A]"
                                                     />
+                                                    <div className="md:col-span-2">
+                                                        <input
+                                                            placeholder={t('profile.address_form.country')}
+                                                            value={newAddress.country}
+                                                            onChange={(e) => setNewAddress({ ...newAddress, country: e.target.value })}
+                                                            className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 focus:outline-none focus:ring-1 focus:ring-[#C4A49A]"
+                                                        />
+                                                    </div>
                                                 </div>
                                                 <div className="flex justify-end gap-4 mt-8">
                                                     <button onClick={() => { setIsAddingAddress(false); setEditingAddressId(null); }} className="px-6 py-3 rounded-xl text-[#8A7369] font-bold hover:bg-[#F4EFEA] transition-all text-sm">{t('common.cancel')}</button>
@@ -316,18 +322,18 @@ export default function Profile() {
                                 className="bg-white rounded-[32px] p-12 border border-[#F1EBE6] text-center max-w-2xl mx-auto"
                             >
                                 <Truck size={48} className="mx-auto text-[#EBE1DA] mb-6" />
-                                <h3 className="text-2xl font-black text-[#2C2826] mb-4 tracking-tighter">Acompanhe sua Entrega</h3>
+                                <h3 className="text-2xl font-black text-[#2C2826] mb-4 tracking-tighter">{t('profile.track_order')}</h3>
                                 <p className="text-[#A69B97] mb-8 font-light max-w-md mx-auto text-[15px]">
-                                    Insira o código de rastreio da sua encomenda para visualizar o status em tempo real.
+                                    {t('profile.track_desc')}
                                 </p>
                                 <div className="flex flex-col sm:flex-row gap-4 mb-4 justify-center">
                                     <input
                                         type="text"
-                                        placeholder="Ex: BR123456789PT"
-                                        className="w-full sm:w-64 bg-[#FCFAF8] border border-[#F1EBE6] rounded-xl px-6 py-4 focus:outline-none focus:ring-1 focus:ring-[#C4A49A] text-[15px] !text-center sm:!text-left placeholder:text-[#C4A49A]/60"
+                                        placeholder={t('profile.track_placeholder')}
+                                        className="w-full sm:w-64 bg-[#FCFAF8] border border-[#F1EBE6] rounded-xl px-6 py-4 focus:outline-none focus:ring-1 focus:ring-[#C4A49A] text-[15px] text-center sm:text-left placeholder:text-[#C4A49A]/60"
                                     />
                                     <button className="bg-[#2C2826] text-white px-8 py-4 rounded-xl font-bold hover:bg-black transition-all shadow-md active:scale-95 uppercase tracking-widest text-sm">
-                                        Rastrear
+                                        {t('profile.track_order')}
                                     </button>
                                 </div>
                             </motion.div>
@@ -338,9 +344,9 @@ export default function Profile() {
                                 className="bg-white rounded-[32px] p-12 border border-[#F1EBE6] text-center"
                             >
                                 <MapPin size={48} className="mx-auto text-[#EBE1DA] mb-6" />
-                                <h3 className="text-xl font-bold text-[#2C2826] mb-2">{t('profile.orders') || 'No hay pedidos'}</h3>
+                                <h3 className="text-xl font-bold text-[#2C2826] mb-2">{t('profile.orders')}</h3>
                                 <p className="text-[#A69B97] max-w-sm mx-auto font-light">
-                                    Parece que aún no has realizado ninguna compra con nosotros. ¡Explora nuestras colecciones!
+                                    {t('profile.track_no_orders')}
                                 </p>
                             </motion.div>
                         )}

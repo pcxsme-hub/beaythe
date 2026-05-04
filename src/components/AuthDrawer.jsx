@@ -64,7 +64,7 @@ export default function AuthDrawer({ isOpen, onClose }) {
                         animate={{ opacity: 1 }}
                         exit={{ opacity: 0 }}
                         onClick={onClose}
-                        className="fixed inset-0 bg-black/40 z-[60] backdrop-blur-sm"
+                        className="fixed inset-0 bg-black/40 z-[80] backdrop-blur-sm"
                     />
 
                     <motion.div
@@ -72,7 +72,7 @@ export default function AuthDrawer({ isOpen, onClose }) {
                         animate={{ x: 0 }}
                         exit={{ x: '100%' }}
                         transition={{ type: 'tween', duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
-                        className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white z-[70] shadow-2xl flex flex-col"
+                        className="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-white z-[90] shadow-2xl flex flex-col"
                     >
                         {/* Header */}
                         <div className="flex items-center justify-between p-6 border-b border-[#F1EBE6] bg-white sticky top-0 z-10">
@@ -128,14 +128,14 @@ export default function AuthDrawer({ isOpen, onClose }) {
                                                     value={email}
                                                     onChange={(e) => setEmail(e.target.value)}
                                                     className="bg-white border border-[#EBE1DA] px-4 py-3 outline-none focus:border-[#C4A49A] text-[13px] rounded-xl transition-colors shadow-sm"
-                                                    placeholder="seu@email.com"
+                                                    placeholder={t('auth.email_placeholder')}
                                                 />
                                             </div>
 
                                             <div className="flex flex-col">
                                                 <div className="flex justify-between items-center mb-2">
                                                     <label className="text-[11px] font-bold text-[#8A7369] uppercase tracking-wider">{t('auth.password_label')}</label>
-                                                    {isLogin && <a href="#" className="text-[11px] text-[#C4A49A] hover:underline hover:text-[#8A7369]">{t('auth.forgot_password')}</a>}
+                                                    {isLogin && <button type="button" onClick={(e) => e.preventDefault()} className="text-[11px] text-[#C4A49A] hover:underline hover:text-[#8A7369]">{t('auth.forgot_password')}</button>}
                                                 </div>
                                                 <input
                                                     required
@@ -159,7 +159,7 @@ export default function AuthDrawer({ isOpen, onClose }) {
 
                                         <div className="my-8 relative flex items-center">
                                             <div className="flex-grow border-t border-[#EBE1DA]"></div>
-                                            <span className="px-4 text-[10px] text-[#A69B97] font-bold uppercase tracking-widest">ou</span>
+                                            <span className="px-4 text-[10px] text-[#A69B97] font-bold uppercase tracking-widest">{t('auth.divider')}</span>
                                             <div className="flex-grow border-t border-[#EBE1DA]"></div>
                                         </div>
 
@@ -192,16 +192,16 @@ export default function AuthDrawer({ isOpen, onClose }) {
                                         <div className="bg-[#EBE1DA] rounded-3xl p-6 text-center mb-8 border border-[#D9CECB]">
                                             <CheckCircle2 size={40} className="mx-auto text-[#8A7369] mb-4" />
                                             <h3 className="text-lg font-bold text-[#2C2826] mb-2 uppercase tracking-tight">{t('auth.account_created')}</h3>
-                                            <p className="text-[#8A7369] text-[13px] leading-relaxed lowercase">Complete seu perfil para uma experiência personalizada.</p>
+                                            <p className="text-[#8A7369] text-[13px] leading-relaxed">{t('auth.complete_profile_desc')}</p>
                                         </div>
 
                                         <div className="space-y-6 flex-grow">
                                             <div className="flex flex-col">
                                                 <label className="text-[11px] font-bold text-[#8A7369] uppercase tracking-wider mb-2">{t('auth.interests_label')}</label>
                                                 <div className="flex flex-wrap gap-2">
-                                                    {['Skincare', 'Makeup', 'Cabelo', 'Corpo'].map(tag => (
-                                                        <button key={tag} className="px-4 py-2 bg-white border border-[#EBE1DA] rounded-full text-[12px] hover:border-[#C4A49A] transition-all">
-                                                            {tag}
+                                                    {['skincare', 'makeup', 'hair', 'body'].map(key => (
+                                                        <button type="button" key={key} className="px-4 py-2 bg-white border border-[#EBE1DA] rounded-full text-[12px] hover:border-[#C4A49A] transition-all">
+                                                            {t(`auth.interests.${key}`)}
                                                         </button>
                                                     ))}
                                                 </div>

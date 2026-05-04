@@ -55,6 +55,7 @@ const translationsData = {
             favorites: "Favoritos",
             back_to_top: "Volver arriba",
             show_more: "Ver Más",
+            close: "Cerrar",
             seo: {
                 home: "Beauthé: Alta cosmética vegana y rituales de belleza con propósito. Descubre lo melhor en cuidado facial y corporal.",
                 skin: "Cuidado Facial: Sérums, cremas y tónicos formulados con ingredientes naturales para una piel radiante y saludable.",
@@ -81,6 +82,9 @@ const translationsData = {
             cuerpo: { title: "Baño y Cuerpo", tagline: "Bienestar Total", desc: "Hidratación profunda para cada centímetro de tu piel." },
             bienestar: { title: "Bienestar", tagline: "Mente y Cuerpo", desc: "Productos diseñados para tu momento de relax diario." },
             hombre: { title: "Línea Hombre", tagline: "Cuidado Masculino", desc: "Fórmulas prácticas y eficaces para el hombre moderno." },
+            solares: { title: "Protección Solar", tagline: "Cuidado bajo el Sol", desc: "Protege tu piel con texturas ligeras y filtros de alta protección." },
+            perfumes: { title: "Perfumes", tagline: "Tu Firma Olfativa", desc: "Fragancias que cuentan historias en cada aplicación." },
+            outlet: { title: "Outlet", tagline: "Promociones Exclusivas", desc: "Productos seleccionados con descuentos especiales." },
             default: { title: "Beauthé", tagline: "Belleza con Propósito", desc: "Explora nuestra selección de alta cosmética natural." }
         },
         hero: {
@@ -118,12 +122,17 @@ const translationsData = {
             polvo: "Polvos",
             rubor: "Colorete",
             labios: "Labios",
+            cuidado_facial: "Cuidado Facial",
+            maquillaje_facial: "Maquillaje",
+            ferramentas: "Ferramentas",
+            cepillos: "Escovas",
+            planchas: "Planchas",
             higiene: "Higiene",
             hidratacion: "Hidratación",
             cuidados: "Cuidados",
             lavado: "Lavado",
             tratamiento: "Tratamiento",
-            styling: "Peinado",
+            styling: "Styling",
             femeninos: "Femeninos",
             masculinos: "Masculinos",
             unisex: "Unisex",
@@ -149,6 +158,9 @@ const translationsData = {
             sub_lavado: ["Champús", "Acondicionadores"],
             sub_tratamiento: ["Mascarillas", "Sérums"],
             sub_styling: ["Sprays", "Protección Térmica"],
+            sub_ferramentas: ["Escovas", "Planchas", "Secadores"],
+            sub_cepillos: ["Desenredante", "Térmico"],
+            sub_planchas: ["Alisadora", "Rizadora"],
             sub_femeninos: ["Perfumes", "Colonias"],
             sub_masculinos: ["Frescos", "Intensos"],
             sub_unisex: ["Cítricos", "Amaderados"],
@@ -190,8 +202,12 @@ const translationsData = {
             interests_label: "Intereses",
             birth_label: "Fecha de Nacimiento",
             complete_profile: "Finalizar Perfil",
+            complete_profile_desc: "Completa tu perfil para una experiencia personalizada.",
             skip_step: "Saltar por ahora",
-            invalid_email: "Por favor, introduce un email válido."
+            invalid_email: "Por favor, introduce un email válido.",
+            email_placeholder: "tu@email.com",
+            divider: "o",
+            interests: { skincare: "Skincare", makeup: "Maquillaje", hair: "Cabello", body: "Cuerpo" }
         },
         profile: {
             account: "Mi Perfil",
@@ -199,10 +215,17 @@ const translationsData = {
             addresses: "Direcciones",
             addresses_desc: "Gestiona tus direcciones de envío.",
             orders: "Mis Pedidos",
+            track_order: "Rastrear pedido",
+            track_desc: "Sigue tu envío en tiempo real.",
+            track_placeholder: "Introduce el código de seguimiento",
+            track_no_orders: "Aún no has realizado ningún pedido.",
             settings: "Configuración",
             logout: "Cerrar sesión",
             add_address: "Añadir dirección",
-            edit_address: "Editar dirección"
+            edit_address: "Editar dirección",
+            address_form: { label: "Etiqueta (Casa, Trabajo)", street: "Calle y número", city: "Ciudad", postal: "Código postal", country: "País" },
+            user_default_name: "Invitada",
+            user_default_email: "invitada@beauthe.com"
         },
         checkout: {
             title: "Finalizar Pedido",
@@ -213,10 +236,26 @@ const translationsData = {
             secure: "Pago 100% Seguro",
             returns_guarantee: "Devolución garantizada",
             save_info: "Guardar mis datos para la próxima vez",
+            empty_cart: "Tu carrito está vacío.",
+            continue_shopping: "Seguir comprando",
+            back_to_cart: "Volver al carrito",
+            free_shipping: "GRATIS",
+            fields: {
+                email: "Email",
+                first_name: "Nombre",
+                last_name: "Apellido",
+                address: "Dirección",
+                zip: "Código postal",
+                city: "Ciudad"
+            },
             payments: {
                 card: "Tarjeta de Crédito",
                 paypal: "PayPal",
-                transfer: "Transferencia Bancaria"
+                transfer: "Transferencia Bancaria",
+                bizum: "Bizum",
+                klarna: "Klarna",
+                mbway: "MB WAY",
+                multibanco: "Multibanco"
             }
         },
         faq_section: {
@@ -263,6 +302,12 @@ const translationsData = {
             average: "Media de 4.9/5 estrellas baseada en clientes verificados",
             show_more: "Ver Más Reviews"
         },
+        product_bottom: {
+            tag: "Calidad y Pureza",
+            title_1: "Lo mejor para",
+            title_2: "tu piel",
+            desc: "Nuestros productos son formulados con ingredientes naturales de la más alta calidad, garantizando resultados visibles y un cuidado excepcional."
+        },
         filters: {
             price: "Precio",
             skin_tone: "Tono de piel",
@@ -270,6 +315,7 @@ const translationsData = {
             product_type: "Tipo de producto",
             items: "artículos",
             sort: "Ordenar",
+            load_more: "Cargar más",
             sort_options: {
                 recomendados: "Recomendados",
                 mais_vendidos: "Más Vendidos",
@@ -282,6 +328,10 @@ const translationsData = {
                 melhor_avaliados: "Mejor Valorados",
                 em_tendencia: "Tendencia"
             }
+        },
+        trending: {
+            tag: "Lo Más Pedido",
+            title: "Tendencia ahora"
         },
         history: {
             banner_tag: "De una idea a un estilo de vida",
@@ -313,7 +363,27 @@ const translationsData = {
             subscribe_btn: "Unirse",
             placeholder: "Tu e-mail",
             rights: "Todos los derechos reservados.",
-            back_to_top: "Volver arriba"
+            back_to_top: "Volver arriba",
+            need_help: "¿Necesitas ayuda?",
+            track_purchase: "Seguir mi compra",
+            institutional: "Institucional",
+            categories_title: "Categorías",
+            links: {
+                contact: "Habla con nosotros",
+                faq: "Preguntas Frecuentes",
+                support: "Centro de Atención",
+                my_account: "Mi cuenta",
+                my_orders: "Mis pedidos",
+                returns: "Cambios y devoluciones",
+                track: "Seguir entrega",
+                who_we_are: "Quiénes somos",
+                terms: "Términos y Condiciones",
+                privacy: "Política de Privacidad",
+                payments: "Política de Pagos",
+                legal_notice: "Aviso Legal",
+                admin: "Panel Admin"
+            },
+            copyright_full: "© 2026 BEAUTHÉ. Todos los derechos reservados."
         },
         trust: [
             { id: 1, icon: 'Truck', title: 'ENVÍO GRATUITO DESDE 50€' },
@@ -384,7 +454,32 @@ const translationsData = {
             add_to_cart: "Añadir al carrito",
             paraben_free: "sin parabenos",
             vegan: "vegano",
-            recommended: "Productos Recomendados"
+            recommended: "Productos Recomendados",
+            reviews_count: "(24 reseñas)",
+            in_stock: "En stock",
+            free_shipping_50: "Envío gratuito a partir de 50€",
+            usage: "Modo de uso",
+            shipping_title: "Envío y Devolución",
+            description_fallback: "Producto de alta cosmética desarrollado para realzar tu rutina de belleza con resultados visibles.",
+            usage_fallback: "Aplica sobre la piel limpia y seca con movimientos circulares hasta su total absorción.",
+            ingredients_fallback: "Aqua, Niacinamide, Glycerin, Rosa Centifolia Flower Extract, Hyaluronic Acid, Phenoxyethanol.",
+            shipping_fallback: "Envío gratis en pedidos superiores a 50€. Entrega en 2-4 días laborables. Devolución gratuita en hasta 30 días.",
+            not_found: "Producto no encontrado",
+            not_found_desc: "Este producto puede haber sido retirado o el enlace es incorrecto.",
+            dermatologically_tested: "Testado dermatológicamente",
+            vegan_badge: "Vegano",
+            benefits: "BENEFICIOS",
+            benefits_headline: "Beneficios exclusivos para una experiencia única.",
+            benefits_desc: "Desarrollado con alta tecnología para garantizar un efecto duradero y respetuoso con tu piel.",
+            benefit_vegan: "Vegano",
+            benefit_cruelty_free: "Cruelty Free",
+            benefit_no_parabens: "Sin Parabenos",
+            benefit_no_fragrance: "Sin Fragancia",
+            feature_light_texture: "Textura Ligera",
+            feature_thin: "Extra Fino",
+            feature_soft_focus: "Efecto Soft Focus",
+            feature_water_resistant: "Resistente al Agua",
+            reviews: "Reseñas"
         },
         badges: {
             best_seller: "Más Vendido",
@@ -394,9 +489,94 @@ const translationsData = {
         favorites: {
             title: "Tus favoritos",
             empty_title_1: "Aún no tienes",
-            empty_title_2: "favoritos"
+            empty_title_2: "favoritos",
+            clear_favorites: "Vaciar favoritos",
+            empty_desc: "Cuando guardes productos como favoritos aparecerán aquí.",
+            explore: "Explorar productos"
         },
-        products: {}
+        products: {},
+        helpbot: {
+            title: "Ayuda Beauthé",
+            subtitle: "Asistente Inteligente",
+            placeholder: "Escribe tu duda...",
+            welcome: "¡Hola! Soy tu asistente Beauthé. ¿En qué puedo ayudarte hoy?",
+            faq: {
+                greeting: "¡Hola! Soy tu asistente de Beauthé. ¿En qué puedo ayudarte hoy?",
+                shipping: "Hacemos envíos gratuitos a partir de 50€ con entrega en 48-72h en la península.",
+                payments: "Aceptamos tarjeta, PayPal, transferencia y Bizum. Todos los pagos son 100% seguros.",
+                returns: "Tienes 14 días para devolver cualquier producto sin abrir. Escríbenos a contato@beauthe.com.",
+                products: "Todos nuestros productos son veganos y cruelty-free, formulados en Europa.",
+                skin: "Para tu tipo de piel recomendamos empezar con nuestro Skin Quiz, así te sugerimos un ritual personalizado.",
+                makeup: "Nuestra línea Essential es perfecta para un look natural. ¿Buscas algo para labios o rostro?",
+                unknown: "No estoy segura de eso, pero puedes escribirnos a contato@beauthe.com y te respondemos en breve."
+            }
+        },
+        cro: {
+            cart_abandoned_title: "¿Olvidaste algo?",
+            cart_abandoned_desc: "Dejaste artículos en tu carrito.",
+            continue_purchase: "Continuar compra"
+        },
+        about_drawer: {
+            title: "Nuestra Historia",
+            heading_story: "DE UNA IDEA A UN ESTILO DE VIDA",
+            story: "Beauthé nació de un sueño sencillo: democratizar el acceso a productos de belleza de alta calidad que respeten tanto la piel como el entorno natural. Comenzamos experimentando con ingredientes puros y fórmulas limpias, impulsados por la necesidad de transparencia en el cuidado personal.",
+            heading_principles: "NUESTROS PRINCIPIOS",
+            principles: {
+                cruelty_free: { title: "100% Cruelty Free", desc: "Nunca probamos en animales y exigimos las mismas prácticas éticas a todos nuestros proveedores." },
+                clean_formulas: { title: "Fórmulas Limpias", desc: "Nuestras colecciones están libres de parabenos, sulfatos agresivos y químicos innecesarios." },
+                sustainability: { title: "Sostenibilidad", desc: "Usamos envases reciclables y nos esforzamos por mantener procesos neutros en carbono." },
+                transparency: { title: "Transparencia Real", desc: "Tienes derecho a saber exactamente qué ingredientes pones sobre tu piel." }
+            },
+            quote: "“Creemos que cuidarse a uno mismo es el primer y más importante paso para sentirse invencible cada día.”",
+            back: "Volver a la tienda"
+        },
+        help: {
+            title: "¿Cómo podemos ayudarte?",
+            search_placeholder: "Busca tu duda...",
+            most_accessed: "Más consultadas",
+            contact_us: "Hablar con un agente",
+            cta_title: "¿No encuentras lo que buscas?",
+            cta_desc: "Estamos disponibles 24/7 por chat o e-mail.",
+            back: "Volver al centro de ayuda",
+            categories: {
+                products: "Eficacia y Rituales",
+                refunds: "Cambios y Devoluciones",
+                payments: "Pagos",
+                deliveries: "Envíos",
+                account: "Mi Cuenta"
+            },
+            faqs: {
+                most_accessed: [
+                    { q: "¿CÓMO RASTREO MI PEDIDO?", a: "En cuanto el pedido sea enviado recibirás un código de seguimiento por correo para acompañar la entrega en tiempo real." },
+                    { q: "¿QUÉ MÉTODOS DE PAGO ACEPTAN?", a: "Aceptamos tarjeta, PayPal, Bizum y transferencia bancaria. Todas las transacciones son 100% seguras." },
+                    { q: "¿PUEDO DEVOLVER UN PRODUCTO YA ABIERTO?", a: "Por motivos de higiene, sólo aceptamos devoluciones de productos cerrados con el precinto original intacto." },
+                    { q: "¿CUÁL ES EL PLAZO DE ENTREGA?", a: "El plazo medio es de 2 a 5 días laborables en península. Para islas puede llegar hasta 10 días laborables." },
+                    { q: "OLVIDÉ MI CONTRASEÑA, ¿CÓMO LA RECUPERO?", a: "Pulsa en 'Olvidé mi contraseña' en la pantalla de inicio de sesión y sigue las instrucciones recibidas en tu correo." }
+                ],
+                refunds: [
+                    { q: "¿CÓMO SOLICITAR UN CAMBIO O DEVOLUCIÓN?", a: "El producto debe estar precintado y sin uso. Escríbenos a contato@beauthe.com en hasta 14 días después de la recepción indicando el número de pedido." },
+                    { q: "¿CUÁL ES EL PLAZO PARA CAMBIOS?", a: "Tienes 14 días para devolución por desistimiento y 30 días para productos con defecto de fábrica." },
+                    { q: "¿QUIÉN PAGA EL ENVÍO DE DEVOLUCIÓN?", a: "El primer cambio por defecto o error de envío corre por nuestra cuenta. En caso de desistimiento, el envío de retorno es responsabilidad del cliente." },
+                    { q: "¿CÓMO SE HACE EL REEMBOLSO?", a: "El reembolso se realiza por el mismo método utilizado en la compra. Para tarjetas puede aparecer hasta 2 ciclos después del procesamiento." }
+                ],
+                deliveries: [
+                    { q: "¿CUÁL ES EL COSTE DEL ENVÍO?", a: "Envío gratuito en compras superiores a 50€ en España y Portugal Peninsular. Para importes inferiores, la tasa se calcula en el checkout." },
+                    { q: "¿BEAUTHÉ ENVÍA A TODA EUROPA?", a: "Por ahora enviamos a España (Península e Islas) y Portugal, garantizando plazos reducidos." },
+                    { q: "¿CÓMO RASTREO MI PEDIDO?", a: "Recibirás un código de seguimiento por correo en cuanto el pedido sea enviado." },
+                    { q: "¿CUÁL ES EL PLAZO MEDIO DE ENTREGA?", a: "2-5 días laborables en península; hasta 10 días para islas." }
+                ],
+                payments: [
+                    { q: "¿QUÉ MÉTODOS DE PAGO SE ACEPTAN?", a: "Aceptamos tarjeta (Visa, Mastercard), PayPal, Bizum y Apple Pay. Todas las transacciones son seguras y cifradas." },
+                    { q: "¿QUIÉN PROCESA LOS PAGOS?", a: "Los pagos se procesan a través de Stripe, una de las plataformas más seguras del mundo." },
+                    { q: "¿MI PAGO REQUIERE APROBACIÓN?", a: "Bizum y Apple Pay se aprueban al instante. Las tarjetas pueden pasar por una breve revisión de seguridad." }
+                ],
+                account: [
+                    { q: "OLVIDÉ MI CONTRASEÑA, ¿QUÉ HAGO?", a: "Pulsa 'Olvidé mi contraseña' en la pantalla de inicio de sesión y enviaremos un enlace de recuperación al correo registrado." },
+                    { q: "¿CÓMO PUEDO MODIFICAR MIS DATOS?", a: "Accede a la sección 'Mi Perfil' tras iniciar sesión para editar tu nombre, correo y direcciones guardadas." },
+                    { q: "¿MIS DATOS ESTÁN SEGUROS?", a: "Sí. Cumplimos con el RGPD y utilizamos cifrado SSL en todo el sitio." }
+                ]
+            }
+        }
     },
     pt: {
         currency: "€",
@@ -442,6 +622,7 @@ const translationsData = {
             favorites: "Favoritos",
             back_to_top: "Voltar ao topo",
             show_more: "Ver Mais",
+            close: "Fechar",
             seo: {
                 home: "Beauthé: Alta cosmética vegana e rituais de beleza com propósito. Descubra o melhor em cuidado facial e corporal.",
                 skin: "Cuidado Facial: Séruns, cremes e tónicos formulados com ingredientes naturais para uma pele radiante e saudável.",
@@ -468,6 +649,9 @@ const translationsData = {
             cuerpo: { title: "Banho e Corpo", tagline: "Bem-estar Total", desc: "Hidratação profunda para cada centímetro da sua pele." },
             bienestar: { title: "Bem-estar", tagline: "Mente e Corpo", desc: "Produtos desenhados para o seu momento de relax diário." },
             hombre: { title: "Linha Homem", tagline: "Cuidado Masculino", desc: "Fórmulas práticas e eficazes para o homem moderno." },
+            solares: { title: "Proteção Solar", tagline: "Cuidado sob o Sol", desc: "Proteja a sua pele com texturas leves e filtros de alta proteção." },
+            perfumes: { title: "Perfumes", tagline: "A sua Assinatura", desc: "Fragrâncias que contam histórias a cada aplicação." },
+            outlet: { title: "Outlet", tagline: "Promoções Exclusivas", desc: "Produtos selecionados com descontos especiais." },
             default: { title: "Beauthé", tagline: "Beleza com Propósito", desc: "Explore a nossa seleção de alta cosmética natural." }
         },
         hero: {
@@ -505,6 +689,11 @@ const translationsData = {
             polvo: "Pós",
             rubor: "Blush",
             labios: "Lábios",
+            cuidado_facial: "Tratamento Facial",
+            maquillaje_facial: "Cor & Cobertura",
+            ferramentas: "Ferramentas",
+            cepillos: "Escovas",
+            planchas: "Modeladores",
             higiene: "Higiene",
             hidratacion: "Hidratação",
             cuidados: "Cuidados",
@@ -536,6 +725,9 @@ const translationsData = {
             sub_lavado: ["Champôs", "Amaciadores"],
             sub_tratamiento: ["Máscaras", "Sérums"],
             sub_styling: ["Sprays", "Proteção Térmica"],
+            sub_ferramentas: ["Escovas", "Pranchas", "Secadores"],
+            sub_cepillos: ["Desembaraçantes", "Térmicas"],
+            sub_planchas: ["Alisadores", "Modeladores"],
             sub_femeninos: ["Perfumes", "Colónias"],
             sub_masculinos: ["Frescos", "Intensos"],
             sub_unisex: ["Cítricos", "Amaderados"],
@@ -577,8 +769,12 @@ const translationsData = {
             interests_label: "Interesses",
             birth_label: "Data de Nascimento",
             complete_profile: "Finalizar Perfil",
+            complete_profile_desc: "Complete o seu perfil para uma experiência personalizada.",
             skip_step: "Saltar por agora",
-            invalid_email: "Por favor, introduza um e-mail válido."
+            invalid_email: "Por favor, introduza um e-mail válido.",
+            email_placeholder: "voce@email.com",
+            divider: "ou",
+            interests: { skincare: "Skincare", makeup: "Maquilhagem", hair: "Cabelo", body: "Corpo" }
         },
         profile: {
             account: "Meu Perfil",
@@ -586,10 +782,17 @@ const translationsData = {
             addresses: "Endereços",
             addresses_desc: "Gira os seus endereços de envio.",
             orders: "Minhas Encomendas",
+            track_order: "Rastrear encomenda",
+            track_desc: "Acompanhe a sua entrega em tempo real.",
+            track_placeholder: "Insira o código de rastreamento",
+            track_no_orders: "Ainda não fez nenhuma encomenda.",
             settings: "Configurações",
             logout: "Sair da conta",
             add_address: "Adicionar endereço",
-            edit_address: "Editar endereço"
+            edit_address: "Editar endereço",
+            address_form: { label: "Etiqueta (Casa, Trabalho)", street: "Rua e número", city: "Cidade", postal: "Código postal", country: "País" },
+            user_default_name: "Visitante",
+            user_default_email: "visitante@beauthe.com"
         },
         checkout: {
             title: "Finalizar Encomenda",
@@ -600,10 +803,26 @@ const translationsData = {
             secure: "Pagamento 100% Seguro",
             returns_guarantee: "Devolução garantida",
             save_info: "Guardar os meus dados para a próxima vez",
+            empty_cart: "O seu carrinho está vazio.",
+            continue_shopping: "Continuar a comprar",
+            back_to_cart: "Voltar ao carrinho",
+            free_shipping: "GRÁTIS",
+            fields: {
+                email: "Email",
+                first_name: "Nome",
+                last_name: "Apelido",
+                address: "Morada",
+                zip: "Código postal",
+                city: "Cidade"
+            },
             payments: {
                 card: "Cartão de Crédito",
                 paypal: "PayPal",
-                transfer: "Transferência Bancaria"
+                transfer: "Transferência Bancária",
+                bizum: "Bizum",
+                klarna: "Klarna",
+                mbway: "MB WAY",
+                multibanco: "Multibanco"
             }
         },
         faq_section: {
@@ -650,6 +869,12 @@ const translationsData = {
             average: "Média de 4.9/5 estrelas baseada em clientes verificados",
             show_more: "Ver Mais Reviews"
         },
+        product_bottom: {
+            tag: "Qualidade & Pureza",
+            title_1: "O melhor para",
+            title_2: "a sua pele",
+            desc: "Os nossos produtos são formulados com ingredientes naturais da mais alta qualidade, garantindo resultados visíveis e um cuidado excepcional."
+        },
         filters: {
             price: "Preço",
             skin_tone: "Grupo de tons",
@@ -657,6 +882,7 @@ const translationsData = {
             product_type: "Tipo de produto",
             items: "artigos",
             sort: "Ordenar",
+            load_more: "Carregar mais",
             sort_options: {
                 recomendados: "Recomendados",
                 mais_vendidos: "Mais Vendidos",
@@ -669,6 +895,10 @@ const translationsData = {
                 melhor_avaliados: "Melhor Avaliados",
                 em_tendencia: "Tendência"
             }
+        },
+        trending: {
+            tag: "Em destaque",
+            title: "Tendência agora"
         },
         history: {
             banner_tag: "De uma ideia a um estilo de vida",
@@ -700,7 +930,27 @@ const translationsData = {
             subscribe_btn: "Aderir",
             placeholder: "O seu e-mail",
             rights: "Todos os direitos reservados.",
-            back_to_top: "Voltar ao topo"
+            back_to_top: "Voltar ao topo",
+            need_help: "Precisa de ajuda?",
+            track_purchase: "Acompanhar compra",
+            institutional: "Institucional",
+            categories_title: "Categorias",
+            links: {
+                contact: "Fala connosco",
+                faq: "Perguntas Frequentes",
+                support: "Centro de Atendimento",
+                my_account: "Minha conta",
+                my_orders: "Meus pedidos",
+                returns: "Trocas e devoluções",
+                track: "Rastrear entrega",
+                who_we_are: "Quem somos",
+                terms: "Termos e Condições",
+                privacy: "Política de Privacidade",
+                payments: "Política de Pagamentos",
+                legal_notice: "Aviso Legal",
+                admin: "Painel Admin"
+            },
+            copyright_full: "© 2026 BEAUTHÉ. Todos os direitos reservados."
         },
         trust: [
             { id: 1, icon: 'Truck', title: 'ENVIO GRATUITO DESDE 50€' },
@@ -771,7 +1021,32 @@ const translationsData = {
             add_to_cart: "Adicionar ao carrinho",
             paraben_free: "sem parabenos",
             vegan: "vegano",
-            recommended: "Produtos Recomendados"
+            recommended: "Produtos Recomendados",
+            reviews_count: "(24 avaliações)",
+            in_stock: "Em stock",
+            free_shipping_50: "Envio gratuito a partir de 50€",
+            usage: "Modo de usar",
+            shipping_title: "Envio e Devolução",
+            description_fallback: "Produto de alta cosmética desenvolvido para elevar a sua rotina de beleza com resultados visíveis.",
+            usage_fallback: "Aplique sobre a pele limpa e seca em movimentos circulares até total absorção.",
+            ingredients_fallback: "Aqua, Niacinamide, Glycerin, Rosa Centifolia Flower Extract, Hyaluronic Acid, Phenoxyethanol.",
+            shipping_fallback: "Envio gratuito em pedidos acima de 50€. Entrega em 2-4 dias úteis. Devolução gratuita até 30 dias.",
+            not_found: "Produto não encontrado",
+            not_found_desc: "Este item pode ter sido removido ou o link está incorreto.",
+            dermatologically_tested: "Testado dermatologicamente",
+            vegan_badge: "Vegano",
+            benefits: "BENEFÍCIOS",
+            benefits_headline: "Benefícios exclusivos para uma experiência única.",
+            benefits_desc: "Desenvolvido com alta tecnologia para garantir um efeito duradouro respeitando a sua pele.",
+            benefit_vegan: "Vegano",
+            benefit_cruelty_free: "Cruelty Free",
+            benefit_no_parabens: "Sem Parabenos",
+            benefit_no_fragrance: "Sem Fragrância",
+            feature_light_texture: "Textura Leve",
+            feature_thin: "Extra Fino",
+            feature_soft_focus: "Efeito Soft Focus",
+            feature_water_resistant: "Resistente à Água",
+            reviews: "Avaliações"
         },
         badges: {
             best_seller: "Mais Vendido",
@@ -781,9 +1056,94 @@ const translationsData = {
         favorites: {
             title: "Os seus favoritos",
             empty_title_1: "Ainda não tem",
-            empty_title_2: "favoritos ainda"
+            empty_title_2: "favoritos ainda",
+            clear_favorites: "Esvaziar favoritos",
+            empty_desc: "Quando guardar produtos como favoritos vão aparecer aqui.",
+            explore: "Explorar produtos"
         },
-        products: {}
+        products: {},
+        helpbot: {
+            title: "Ajuda Beauthé",
+            subtitle: "Assistente Inteligente",
+            placeholder: "Escreva a sua dúvida...",
+            welcome: "Olá! Sou o seu assistente Beauthé. Em que posso ajudá-lo hoje?",
+            faq: {
+                greeting: "Olá! Sou o assistente da Beauthé. Em que posso ajudá-lo hoje?",
+                shipping: "Fazemos envios gratuitos a partir de 50€ com entrega em 48-72h em Portugal continental.",
+                payments: "Aceitamos cartão, PayPal, MB WAY e transferência bancária. Todos os pagamentos são 100% seguros.",
+                returns: "Tem 14 dias para devolver qualquer produto fechado. Escreva para contato@beauthe.com.",
+                products: "Todos os nossos produtos são veganos e cruelty-free, formulados na Europa.",
+                skin: "Para o seu tipo de pele recomendamos começar pelo nosso Skin Quiz para sugerir um ritual personalizado.",
+                makeup: "A nossa linha Essential é perfeita para um look natural. Procura algo para lábios ou rosto?",
+                unknown: "Não tenho a certeza disso, mas pode escrever-nos para contato@beauthe.com e respondemos em breve."
+            }
+        },
+        cro: {
+            cart_abandoned_title: "Esqueceu-se de algo?",
+            cart_abandoned_desc: "Deixou artigos no seu carrinho.",
+            continue_purchase: "Continuar compra"
+        },
+        about_drawer: {
+            title: "A Nossa História",
+            heading_story: "DE UMA IDEIA A UM ESTILO DE VIDA",
+            story: "A Beauthé nasceu de um sonho simples: democratizar o acesso a produtos de beleza de alta qualidade que respeitem a pele e o ambiente. Começamos a experimentar ingredientes puros e fórmulas limpas, motivados pela necessidade de transparência no cuidado pessoal.",
+            heading_principles: "OS NOSSOS PRINCÍPIOS",
+            principles: {
+                cruelty_free: { title: "100% Cruelty Free", desc: "Nunca testamos em animais e exigimos as mesmas práticas éticas aos nossos parceiros." },
+                clean_formulas: { title: "Fórmulas Limpas", desc: "As nossas coleções são livres de parabenos, sulfatos agressivos e químicos desnecessários." },
+                sustainability: { title: "Sustentabilidade", desc: "Usamos embalagens recicláveis e procuramos manter processos neutros em carbono." },
+                transparency: { title: "Transparência Real", desc: "Tem direito a saber exatamente que ingredientes coloca na sua pele." }
+            },
+            quote: "“Acreditamos que cuidar de si é o primeiro e mais importante passo para se sentir invencível todos os dias.”",
+            back: "Voltar à loja"
+        },
+        help: {
+            title: "Como podemos ajudar?",
+            search_placeholder: "Pesquise a sua dúvida...",
+            most_accessed: "Mais consultadas",
+            contact_us: "Falar com um agente",
+            cta_title: "Não encontra o que procura?",
+            cta_desc: "Estamos disponíveis 24/7 via chat ou e-mail.",
+            back: "Voltar ao centro de ajuda",
+            categories: {
+                products: "Eficácia e Rituais",
+                refunds: "Trocas e Devoluções",
+                payments: "Pagamentos",
+                deliveries: "Envios",
+                account: "A Minha Conta"
+            },
+            faqs: {
+                most_accessed: [
+                    { q: "COMO RASTREIO O MEU PEDIDO?", a: "Assim que o pedido for despachado, receberá um código de rastreio por e-mail para acompanhar a entrega em tempo real." },
+                    { q: "QUAIS AS FORMAS DE PAGAMENTO ACEITES?", a: "Aceitamos cartão, PayPal, MB WAY e transferência bancária. Todas as transações são 100% seguras." },
+                    { q: "POSSO DEVOLVER UM PRODUTO ABERTO?", a: "Por questões de higiene, apenas aceitamos devoluções de produtos com o lacre original intacto." },
+                    { q: "QUAL O PRAZO DE ENTREGA?", a: "O prazo médio é de 2 a 5 dias úteis em Portugal continental. Para ilhas pode ir até 10 dias úteis." },
+                    { q: "ESQUECI A MINHA PASSWORD, COMO RECUPERAR?", a: "Clique em 'Esqueci a minha password' no ecrã de login e siga as instruções enviadas por e-mail." }
+                ],
+                refunds: [
+                    { q: "COMO SOLICITAR UMA TROCA OU DEVOLUÇÃO?", a: "O produto deve estar lacrado e sem uso. Escreva para contato@beauthe.com em até 14 dias após a receção indicando o número do pedido." },
+                    { q: "QUAL O PRAZO PARA TROCAS?", a: "14 dias para devolução por desistência e 30 dias para produtos com defeito de fábrica." },
+                    { q: "QUEM PAGA O ENVIO DA DEVOLUÇÃO?", a: "A primeira troca por defeito ou erro de envio é por nossa conta. Em caso de desistência, o envio de retorno é da responsabilidade do cliente." },
+                    { q: "COMO É FEITO O REEMBOLSO?", a: "O reembolso é feito pelo mesmo método de pagamento utilizado na compra." }
+                ],
+                deliveries: [
+                    { q: "QUAL O VALOR DO ENVIO?", a: "Envio gratuito em compras acima de 50€ em Portugal e Espanha Peninsular." },
+                    { q: "ENTREGAM EM TODA A EUROPA?", a: "Por agora entregamos em Portugal (Continente e Ilhas) e Espanha." },
+                    { q: "COMO RASTREIO O MEU PEDIDO?", a: "Receberá um código de rastreio por e-mail assim que o pedido for despachado." },
+                    { q: "QUAL O PRAZO MÉDIO DE ENTREGA?", a: "2 a 5 dias úteis no continente; até 10 dias úteis nas ilhas." }
+                ],
+                payments: [
+                    { q: "QUAIS FORMAS DE PAGAMENTO SÃO ACEITES?", a: "Aceitamos cartão (Visa, Mastercard), MB WAY, PayPal e Apple Pay. Todas as transações são encriptadas." },
+                    { q: "QUEM PROCESSA OS PAGAMENTOS?", a: "Os pagamentos são processados através do Stripe." },
+                    { q: "O PAGAMENTO PRECISA DE APROVAÇÃO?", a: "MB WAY e Apple Pay são aprovados de imediato. Cartões podem passar por uma breve análise." }
+                ],
+                account: [
+                    { q: "ESQUECI A MINHA PASSWORD, O QUE FAZER?", a: "Clique em 'Esqueci a minha password' no ecrã de login para receber um link de recuperação." },
+                    { q: "COMO POSSO ALTERAR OS MEUS DADOS?", a: "Aceda à secção 'Meu Perfil' após iniciar sessão para editar dados pessoais e endereços." },
+                    { q: "OS MEUS DADOS ESTÃO SEGUROS?", a: "Sim. Cumprimos o RGPD e utilizamos encriptação SSL em todo o site." }
+                ]
+            }
+        }
     },
     en: {
         currency: "€",
@@ -829,6 +1189,7 @@ const translationsData = {
             favorites: "Favorites",
             back_to_top: "Back to top",
             show_more: "Show More",
+            close: "Close",
             seo: {
                 home: "Beauthé: High-end vegan cosmetics and purposeful beauty rituals. Discover the best in facial and body care.",
                 skin: "Facial Care: Serums, creams and tonics formulated with natural ingredients for radiant and healthy skin.",
@@ -855,6 +1216,9 @@ const translationsData = {
             cuerpo: { title: "Bath & Body", tagline: "Total Well-being", desc: "Deep hydration for every inch of your skin." },
             bienestar: { title: "Wellness", tagline: "Mind & Body", desc: "Products designed for your daily relax moment." },
             hombre: { title: "Men's Line", tagline: "Male Care", desc: "Practical and effective formulas for the modern man." },
+            solares: { title: "Sun Protection", tagline: "Care under the Sun", desc: "Protect your skin with light textures and high-protection filters." },
+            perfumes: { title: "Perfumes", tagline: "Your Signature Scent", desc: "Fragrances that tell stories with every spray." },
+            outlet: { title: "Outlet", tagline: "Exclusive Deals", desc: "Selected products with special discounts." },
             default: { title: "Beauthé", tagline: "Beauty with Purpose", desc: "Explore our selection of natural high cosmetics." }
         },
         hero: {
@@ -905,6 +1269,14 @@ const translationsData = {
             promociones: "Promotions",
             ultimas: "Last Unities",
             best_sellers: "Best Sellers",
+            cuidado_facial: "Facial Care",
+            maquillaje_facial: "Makeup",
+            ferramentas: "Tools",
+            cepillos: "Brushes",
+            planchas: "Straighteners",
+            sub_ferramentas: ["Brushes", "Straighteners", "Hairdryers"],
+            sub_cepillos: ["Detangler", "Thermal"],
+            sub_planchas: ["Flat", "Curling"],
             sub_limpiadores: ["Gels", "Foams", "Micellar"],
             sub_tonicos: ["Hydrating", "Astringent"],
             sub_serums: ["Vitamin C", "Retinol"],
@@ -964,8 +1336,12 @@ const translationsData = {
             interests_label: "Interests",
             birth_label: "Date of Birth",
             complete_profile: "Complete Profile",
+            complete_profile_desc: "Complete your profile for a personalised experience.",
             skip_step: "Skip for now",
-            invalid_email: "Please enter a valid email address."
+            invalid_email: "Please enter a valid email address.",
+            email_placeholder: "you@email.com",
+            divider: "or",
+            interests: { skincare: "Skincare", makeup: "Makeup", hair: "Hair", body: "Body" }
         },
         profile: {
             account: "My Profile",
@@ -973,10 +1349,17 @@ const translationsData = {
             addresses: "Addresses",
             addresses_desc: "Manage your shipping addresses.",
             orders: "My Orders",
+            track_order: "Track order",
+            track_desc: "Follow your delivery in real time.",
+            track_placeholder: "Enter the tracking code",
+            track_no_orders: "You haven't placed any orders yet.",
             settings: "Settings",
             logout: "Logout",
             add_address: "Add address",
-            edit_address: "Edit address"
+            edit_address: "Edit address",
+            address_form: { label: "Label (Home, Work)", street: "Street and number", city: "City", postal: "Postal code", country: "Country" },
+            user_default_name: "Guest",
+            user_default_email: "guest@beauthe.com"
         },
         checkout: {
             title: "Finish Order",
@@ -987,10 +1370,26 @@ const translationsData = {
             secure: "100% Secure Payment",
             returns_guarantee: "Returns guaranteed",
             save_info: "Save my info for next time",
+            empty_cart: "Your cart is empty.",
+            continue_shopping: "Continue shopping",
+            back_to_cart: "Back to cart",
+            free_shipping: "FREE",
+            fields: {
+                email: "Email",
+                first_name: "First name",
+                last_name: "Last name",
+                address: "Address",
+                zip: "Postal code",
+                city: "City"
+            },
             payments: {
                 card: "Credit Card",
                 paypal: "PayPal",
-                transfer: "Bank Transfer"
+                transfer: "Bank Transfer",
+                bizum: "Bizum",
+                klarna: "Klarna",
+                mbway: "MB WAY",
+                multibanco: "Multibanco"
             }
         },
         faq_section: {
@@ -1037,6 +1436,12 @@ const translationsData = {
             average: "Average of 4.9/5 stars based on verified customers",
             show_more: "See More Reviews"
         },
+        product_bottom: {
+            tag: "Quality & Purity",
+            title_1: "The best for",
+            title_2: "your skin",
+            desc: "Our products are formulated with the highest quality natural ingredients, ensuring visible results and exceptional care."
+        },
         filters: {
             price: "Price",
             skin_tone: "Skin tone",
@@ -1044,6 +1449,7 @@ const translationsData = {
             product_type: "Product type",
             items: "items",
             sort: "Sort",
+            load_more: "Load more",
             sort_options: {
                 recomendados: "Recommended",
                 mais_vendidos: "Best Sellers",
@@ -1056,6 +1462,10 @@ const translationsData = {
                 melhor_avaliados: "Best Rated",
                 em_tendencia: "Trend"
             }
+        },
+        trending: {
+            tag: "Most Wanted",
+            title: "Trending now"
         },
         history: {
             banner_tag: "From an idea to a lifestyle",
@@ -1087,7 +1497,27 @@ const translationsData = {
             subscribe_btn: "Join",
             placeholder: "Your email",
             rights: "All rights reserved.",
-            back_to_top: "Back to top"
+            back_to_top: "Back to top",
+            need_help: "Need help?",
+            track_purchase: "Track purchase",
+            institutional: "Institutional",
+            categories_title: "Categories",
+            links: {
+                contact: "Contact us",
+                faq: "Frequently Asked Questions",
+                support: "Support Center",
+                my_account: "My account",
+                my_orders: "My orders",
+                returns: "Exchanges & returns",
+                track: "Track delivery",
+                who_we_are: "About us",
+                terms: "Terms & Conditions",
+                privacy: "Privacy Policy",
+                payments: "Payments Policy",
+                legal_notice: "Legal Notice",
+                admin: "Admin Panel"
+            },
+            copyright_full: "© 2026 BEAUTHÉ. All rights reserved."
         },
         trust: [
             { id: 1, icon: 'Truck', title: 'FREE SHIPPING FROM 50€' },
@@ -1158,7 +1588,32 @@ const translationsData = {
             add_to_cart: "Add to cart",
             paraben_free: "paraben free",
             vegan: "vegan",
-            recommended: "Recommended Products"
+            recommended: "Recommended Products",
+            reviews_count: "(24 reviews)",
+            in_stock: "In stock",
+            free_shipping_50: "Free shipping over €50",
+            usage: "How to use",
+            shipping_title: "Shipping & Returns",
+            description_fallback: "High-cosmetic product designed to elevate your beauty routine with visible results.",
+            usage_fallback: "Apply on clean, dry skin in circular motions until fully absorbed.",
+            ingredients_fallback: "Aqua, Niacinamide, Glycerin, Rosa Centifolia Flower Extract, Hyaluronic Acid, Phenoxyethanol.",
+            shipping_fallback: "Free shipping on orders over €50. Delivery in 2-4 business days. Free returns within 30 days.",
+            not_found: "Product not found",
+            not_found_desc: "This item may have been removed or the link is incorrect.",
+            dermatologically_tested: "Dermatologically tested",
+            vegan_badge: "Vegan",
+            benefits: "BENEFITS",
+            benefits_headline: "Exclusive benefits for a unique experience.",
+            benefits_desc: "Crafted with advanced technology for a long-lasting effect that respects your skin.",
+            benefit_vegan: "Vegan",
+            benefit_cruelty_free: "Cruelty Free",
+            benefit_no_parabens: "No Parabens",
+            benefit_no_fragrance: "Fragrance Free",
+            feature_light_texture: "Light Texture",
+            feature_thin: "Extra Thin",
+            feature_soft_focus: "Soft Focus Effect",
+            feature_water_resistant: "Water Resistant",
+            reviews: "Reviews"
         },
         badges: {
             best_seller: "Best Seller",
@@ -1168,9 +1623,94 @@ const translationsData = {
         favorites: {
             title: "Your favorites",
             empty_title_1: "You don't have",
-            empty_title_2: "favorites yet"
+            empty_title_2: "favorites yet",
+            clear_favorites: "Clear favorites",
+            empty_desc: "When you save products as favorites they'll appear here.",
+            explore: "Explore products"
         },
-        products: {}
+        products: {},
+        helpbot: {
+            title: "Beauthé Help",
+            subtitle: "Smart Assistant",
+            placeholder: "Type your question...",
+            welcome: "Hi! I'm your Beauthé assistant. How can I help you today?",
+            faq: {
+                greeting: "Hi! I'm the Beauthé assistant. How can I help you today?",
+                shipping: "We ship free over €50 with delivery in 48-72h within mainland Spain.",
+                payments: "We accept card, PayPal, bank transfer and Bizum. All payments are 100% secure.",
+                returns: "You have 14 days to return any unopened product. Write to contato@beauthe.com.",
+                products: "All our products are vegan and cruelty-free, formulated in Europe.",
+                skin: "For your skin type we recommend starting with our Skin Quiz so we can suggest a personalised ritual.",
+                makeup: "Our Essential line is perfect for a natural look. Are you looking for lips or face?",
+                unknown: "I'm not sure about that, but you can write to contato@beauthe.com and we'll reply shortly."
+            }
+        },
+        cro: {
+            cart_abandoned_title: "Forgot something?",
+            cart_abandoned_desc: "You left items in your cart.",
+            continue_purchase: "Continue purchase"
+        },
+        about_drawer: {
+            title: "Our Story",
+            heading_story: "FROM AN IDEA TO A LIFESTYLE",
+            story: "Beauthé was born from a simple dream: democratise access to high-quality beauty products that respect both skin and the natural environment. We started by experimenting with pure ingredients and clean formulas, driven by the need for transparency in personal care.",
+            heading_principles: "OUR PRINCIPLES",
+            principles: {
+                cruelty_free: { title: "100% Cruelty Free", desc: "We never test on animals and demand the same ethical standards from all our suppliers." },
+                clean_formulas: { title: "Clean Formulas", desc: "Our collections are free from parabens, harsh sulphates and unnecessary chemicals." },
+                sustainability: { title: "Sustainability", desc: "We use recyclable packaging and aim for carbon-neutral processes." },
+                transparency: { title: "Real Transparency", desc: "You have the right to know exactly what ingredients you put on your skin." }
+            },
+            quote: "“We believe taking care of yourself is the first and most important step to feeling invincible every day.”",
+            back: "Back to shop"
+        },
+        help: {
+            title: "How can we help?",
+            search_placeholder: "Search your question...",
+            most_accessed: "Most viewed",
+            contact_us: "Talk to an agent",
+            cta_title: "Can't find what you need?",
+            cta_desc: "We're available 24/7 via chat or email.",
+            back: "Back to help center",
+            categories: {
+                products: "Effectiveness & Rituals",
+                refunds: "Returns & Exchanges",
+                payments: "Payments",
+                deliveries: "Shipping",
+                account: "My Account"
+            },
+            faqs: {
+                most_accessed: [
+                    { q: "HOW DO I TRACK MY ORDER?", a: "As soon as your order is shipped you'll get a tracking code by email to follow the delivery in real time." },
+                    { q: "WHICH PAYMENT METHODS ARE ACCEPTED?", a: "We accept card, PayPal, Bizum and bank transfer. All transactions are 100% secure." },
+                    { q: "CAN I RETURN AN OPENED PRODUCT?", a: "For hygiene reasons we only accept returns with the original seal intact." },
+                    { q: "WHAT IS THE DELIVERY TIME?", a: "Average 2-5 business days in mainland; up to 10 days for islands." },
+                    { q: "I FORGOT MY PASSWORD, HOW DO I RESET IT?", a: "Click 'Forgot password' on the login screen and follow the instructions sent to your email." }
+                ],
+                refunds: [
+                    { q: "HOW DO I REQUEST A RETURN?", a: "The product must be sealed and unused. Email contato@beauthe.com within 14 days of receipt with the order number." },
+                    { q: "WHAT IS THE RETURN WINDOW?", a: "14 days for change-of-mind returns, 30 days for manufacturing defects." },
+                    { q: "WHO PAYS THE RETURN SHIPPING?", a: "First exchange for defect or shipping error is on us. For change-of-mind, return shipping is the customer's responsibility." },
+                    { q: "HOW IS THE REFUND PROCESSED?", a: "The refund is made to the original payment method." }
+                ],
+                deliveries: [
+                    { q: "HOW MUCH IS SHIPPING?", a: "Free shipping on orders over €50 in mainland Spain and Portugal." },
+                    { q: "DO YOU SHIP TO ALL OF EUROPE?", a: "Currently we ship to Spain and Portugal (mainland and islands)." },
+                    { q: "HOW DO I TRACK MY ORDER?", a: "You'll receive a tracking code by email as soon as the order is dispatched." },
+                    { q: "WHAT IS THE AVERAGE DELIVERY TIME?", a: "2-5 business days mainland; up to 10 days for islands." }
+                ],
+                payments: [
+                    { q: "WHICH PAYMENT METHODS ARE ACCEPTED?", a: "We accept card (Visa, Mastercard), PayPal, Bizum and Apple Pay." },
+                    { q: "WHO PROCESSES THE PAYMENTS?", a: "Payments are processed via Stripe." },
+                    { q: "DOES MY PAYMENT NEED APPROVAL?", a: "Bizum and Apple Pay are approved instantly. Cards may go through a brief security check." }
+                ],
+                account: [
+                    { q: "I FORGOT MY PASSWORD, WHAT DO I DO?", a: "Click 'Forgot password' on the login screen and we'll email a recovery link." },
+                    { q: "HOW DO I UPDATE MY DETAILS?", a: "Go to 'My Profile' after logging in to edit your name, email and saved addresses." },
+                    { q: "IS MY DATA SAFE?", a: "Yes. We comply with GDPR and use SSL encryption sitewide." }
+                ]
+            }
+        }
     }
 };
 
