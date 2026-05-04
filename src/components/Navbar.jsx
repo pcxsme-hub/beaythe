@@ -12,27 +12,27 @@ const topNavKeys = ["rostro", "cuerpo", "cabello", "perfumes", "outlet"];
 const megaMenuData = {
     "rostro": [
         { name: "cuidado_facial", imgs: ["https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=300"], items: ["limpiadores", "tonicos", "serums", "cremas", "contorno", "mascarillas"] },
-        { name: "maquillaje_facial", imgs: ["https://images.unsplash.com/photo-1512496015851-a1c8d1720d29?auto=format&fit=crop&q=80&w=300"], items: ["base", "correctores", "polvo", "rubor", "labios"] },
+        { name: "maquillaje_facial", imgs: ["https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=300"], items: ["base", "correctores", "polvo", "rubor", "labios"] },
     ],
     "cuerpo": [
-        { name: "higiene", imgs: ["https://images.unsplash.com/photo-1607006342411-0a6a7c36c649?auto=format&fit=crop&q=80&w=300"] },
+        { name: "higiene", imgs: ["https://images.unsplash.com/photo-1556228720-195a672e8a03?auto=format&fit=crop&q=80&w=300"] },
         { name: "hidratacion", imgs: ["https://images.unsplash.com/photo-1552046122-03184de85e08?auto=format&fit=crop&q=80&w=300"] },
         { name: "cuidados", imgs: ["https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&q=80&w=300"] },
-        { name: "manos_pies", imgs: ["https://images.unsplash.com/photo-1519415510236-855bc9808d4e?auto=format&fit=crop&q=80&w=300"] },
+        { name: "manos_pies", imgs: ["https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&fit=crop&q=80&w=300"] },
     ],
     "cabello": [
-        { name: "tratamiento", imgs: ["https://images.unsplash.com/photo-1527799822367-3de88bc0c4a3?auto=format&fit=crop&q=80&w=300"], items: ["lavado", "tratamiento"] },
-        { name: "ferramentas", imgs: ["https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=300"], items: ["styling", "cepillos", "planchas"] },
+        { name: "tratamiento", imgs: ["https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80&w=300"], items: ["lavado", "tratamiento"] },
+        { name: "ferramentas", imgs: ["https://images.unsplash.com/photo-1560869713-7d0a29430803?auto=format&fit=crop&q=80&w=300"], items: ["styling", "cepillos", "planchas"] },
     ],
     "perfumes": [
         { name: "femeninos", imgs: ["https://images.unsplash.com/photo-1541643600914-78b084683601?auto=format&fit=crop&q=80&w=300"] },
         { name: "masculinos", imgs: ["https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=300"] },
         { name: "unisex", imgs: ["https://images.unsplash.com/photo-1592945403244-b3fbafd7f539?auto=format&fit=crop&q=80&w=300"] },
-        { name: "hogar", imgs: ["https://images.unsplash.com/photo-1588152844436-056503b0d75b?auto=format&fit=crop&q=80&w=300"] },
+        { name: "hogar", imgs: ["https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=300"] },
     ],
     "outlet": [
         { name: "promociones", imgs: ["https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&q=80&w=300"] },
-        { name: "ultimas", imgs: ["https://images.unsplash.com/photo-1591348113494-51543664906a?auto=format&fit=crop&q=80&w=300"] },
+        { name: "ultimas", imgs: ["https://images.unsplash.com/photo-1571781926291-c477ebfd024b?auto=format&fit=crop&q=80&w=300"] },
         { name: "best_sellers", imgs: ["https://images.unsplash.com/photo-1473496169904-658ba7c44d8a?auto=format&fit=crop&q=80&w=300"] },
     ],
 };
@@ -62,6 +62,7 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
     const navRef = useRef(null);
     const searchRef = useRef(null);
     const lastScrollY = useRef(0);
+    const closeMenuTimer = useRef(null);
 
     const isHeroPage = pathname === '/' || pathname === '/historia';
     const forceSolid = isScrolled || activeMenu || !isHeroPage;
@@ -133,6 +134,35 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
             trackInterest(key);
         }
     };
+
+    const openMenuOnHover = (key) => {
+        if (closeMenuTimer.current) {
+            clearTimeout(closeMenuTimer.current);
+            closeMenuTimer.current = null;
+        }
+        if (megaMenuData[key]) {
+            if (activeMenu !== key) {
+                setActiveMenu(key);
+                trackInterest(key);
+            }
+        } else if (activeMenu) {
+            setActiveMenu(null);
+        }
+    };
+
+    const scheduleCloseMenu = () => {
+        if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current);
+        closeMenuTimer.current = setTimeout(() => setActiveMenu(null), 150);
+    };
+
+    const cancelCloseMenu = () => {
+        if (closeMenuTimer.current) {
+            clearTimeout(closeMenuTimer.current);
+            closeMenuTimer.current = null;
+        }
+    };
+
+    useEffect(() => () => { if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current); }, []);
 
     return (
         <header ref={navRef} className={`fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${forceSolid ? 'bg-white shadow-sm' : 'bg-gradient-to-b from-black/50 via-black/20 to-transparent'}`}>
@@ -321,7 +351,11 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
 
                 {/* Categories Navbar - Hidden on Profile Page */}
                 {!pathname.startsWith('/profile') && (
-                    <nav className={`hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 py-4 overflow-x-auto whitespace-nowrap border-t ${forceSolid ? 'border-[#F1EBE6]' : 'border-white/20'} relative transition-colors duration-500`}>
+                    <nav
+                        onMouseLeave={scheduleCloseMenu}
+                        onMouseEnter={cancelCloseMenu}
+                        className={`hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 py-4 overflow-x-auto whitespace-nowrap border-t ${forceSolid ? 'border-[#F1EBE6]' : 'border-white/20'} relative transition-colors duration-500`}
+                    >
 
                         {topNavKeys.map((key, idx) => {
                             const hasMegaMenu = !!megaMenuData[key];
@@ -331,6 +365,7 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
                                 <button
                                     key={idx}
                                     onClick={() => toggleMenu(key)}
+                                    onMouseEnter={() => openMenuOnHover(key)}
                                     className={`relative text-[13px] tracking-wide transition-all duration-300 flex items-center gap-1.5 focus:outline-none
                   after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-full after:origin-left after:transition-transform after:duration-300 after:ease-out
                   ${isActive ? 'text-[#C4A49A] after:scale-x-100 after:bg-[#C4A49A]' : 'after:scale-x-0 outline-none'}
@@ -358,6 +393,8 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.4, ease: [0.25, 1, 0.5, 1] }}
+                        onMouseEnter={cancelCloseMenu}
+                        onMouseLeave={scheduleCloseMenu}
                         className="absolute top-full left-0 w-full bg-[#FCFAF8] shadow-lg border-t border-[#F1EBE6] overflow-hidden rounded-b-[2rem] z-40"
                     >
                         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
