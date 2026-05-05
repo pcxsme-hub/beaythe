@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PackageSearch, Store, Sparkles, Settings } from 'lucide-react';
+import { LayoutDashboard, PackageSearch, Store, Sparkles, Settings, Wand2, Layers, FileText, Compass, Palette, Megaphone } from 'lucide-react';
 
 export default function AdminLayout() {
     const location = useLocation();
@@ -10,6 +10,12 @@ export default function AdminLayout() {
         { path: '/admin-core-sys/inventory', label: 'Inventário & Preços', icon: <PackageSearch size={20} /> },
         { path: '/admin-core-sys/storefront', label: 'Gestão de Vitrines', icon: <Store size={20} /> },
         { path: '/admin-core-sys/dropea', label: 'Marketplace Dropea', icon: <Sparkles size={20} /> },
+        { path: '/admin-core-sys/landing-engine', label: 'Motor de Landing Pages', icon: <Wand2 size={20} /> },
+        { path: '/admin-core-sys/home-builder', label: 'Construtor da Home', icon: <Layers size={20} /> },
+        { path: '/admin-core-sys/site-copy', label: 'Conteúdo do Site', icon: <FileText size={20} /> },
+        { path: '/admin-core-sys/navigation', label: 'Navegação & Menus', icon: <Compass size={20} /> },
+        { path: '/admin-core-sys/theme', label: 'Tema & Branding', icon: <Palette size={20} /> },
+        { path: '/admin-core-sys/marketing', label: 'Marketing & Cupons', icon: <Megaphone size={20} /> },
     ];
 
     // match exactly or starts with (excluding root edge case)

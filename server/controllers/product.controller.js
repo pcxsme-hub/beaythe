@@ -1,5 +1,6 @@
 import prisma from '../db.js';
 import { fetchProductFromDropea, fetchDropeaCatalog as fetchCatalogService } from '../services/dropea.service.js';
+import { enrichOnImport } from '../services/landing.engine.js';
 
 export const importFromDropea = async (req, res) => {
     const { dropeaId } = req.body;
@@ -38,6 +39,9 @@ export const importFromDropea = async (req, res) => {
                 is_active: true
             }
         });
+
+        // Auto-generate landing data + similar products + kit (deterministic engine).
+        try { await enrichOnImport(product); } catch (e) { console.error('enrichOnImport:', e.message); }
 
         res.json(product);
     } catch (err) {
@@ -99,7 +103,7 @@ export const bulkImportFromDropea = async (req, res) => {
             const finalPrice = parseFloat(((costPrice + settings.fixed_shipping_cost) * (1 + (settings.profit_margin_percent / 100))).toFixed(2));
 
             try {
-                await prisma.product.upsert({
+                const prod = await prisma.product.upsert({
                     where: { dropea_id: prd.id.toString() },
                     update: { price: finalPrice, stock: parseInt(prd.stock_available) || 0, is_active: true },
                     create: {
@@ -112,6 +116,7 @@ export const bulkImportFromDropea = async (req, res) => {
                         is_active: true
                     }
                 });
+                try { await enrichOnImport(prod); } catch (e) { /* keep going on individual failures */ }
                 successCount++;
             } catch (e) {
                 console.error(`Error importing item ${prd.id}:`, e.message);

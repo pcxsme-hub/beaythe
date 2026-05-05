@@ -2,10 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSiteCopy } from '../hooks/useSiteCopy';
 
 export default function NewsletterPopup() {
     const [isVisible, setIsVisible] = useState(false);
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
+    const copy = useSiteCopy('newsletter', lang);
     const [email, setEmail] = useState('');
 
     useEffect(() => {
@@ -58,14 +60,14 @@ export default function NewsletterPopup() {
                         </button>
 
                         <div className="space-y-8">
-                            <h1 className="text-4xl font-bold text-[#2C2826] tracking-tighter mb-4">beauthé</h1>
+                            <h2 className="text-4xl font-bold text-[#2C2826] tracking-tighter mb-4">{copy.brand || 'beauthé'}</h2>
 
                             <div className="space-y-4">
-                                <h2 className="text-xl md:text-2xl font-bold text-[#2C2826] leading-snug">
-                                    {t('popup.title')}
-                                </h2>
+                                <h3 className="text-xl md:text-2xl font-bold text-[#2C2826] leading-snug">
+                                    {copy.title || t('popup.title')}
+                                </h3>
                                 <p className="text-[#5C534F] text-sm md:text-base font-light max-w-[400px] mx-auto leading-relaxed">
-                                    {t('popup.desc')}
+                                    {copy.desc || t('popup.desc')}
                                 </p>
                             </div>
 
@@ -75,26 +77,26 @@ export default function NewsletterPopup() {
                                     required
                                     value={email}
                                     onChange={(e) => setEmail(e.target.value)}
-                                    placeholder="Email"
+                                    placeholder={copy.email_placeholder || 'Email'}
                                     className="w-full px-6 py-4 bg-white border border-[#EBE1DA] rounded-lg text-sm focus:outline-none focus:border-[#2C2826] transition-colors"
                                 />
                                 <button
                                     type="submit"
                                     className="w-full bg-[#2C2826] text-white py-5 rounded-lg text-sm font-bold tracking-widest uppercase hover:bg-[#C4A49A] transition-all shadow-lg active:scale-[0.98]"
                                 >
-                                    {t('popup.subscribe')}
+                                    {copy.subscribe || t('popup.subscribe')}
                                 </button>
                                 <button
                                     type="button"
                                     onClick={handleClose}
                                     className="text-[14px] font-bold text-[#2C2826] border-b border-[#2C2826] hover:text-[#C4A49A] hover:border-[#C4A49A] transition-colors pb-0.5"
                                 >
-                                    {t('popup.no_thanks')}
+                                    {copy.no_thanks || t('popup.no_thanks')}
                                 </button>
                             </form>
 
                             <p className="text-[11px] text-[#A69B97] leading-relaxed max-w-[480px] mx-auto opacity-80">
-                                {t('popup.privacy')}
+                                {copy.privacy || t('popup.privacy')}
                             </p>
                         </div>
                     </motion.div>

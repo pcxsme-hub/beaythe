@@ -4,9 +4,11 @@ import { useLanguage } from '../context/LanguageContext';
 import { useCRO } from '../context/CROContext';
 import { useLocation } from 'react-router-dom';
 import { Cookie, X } from 'lucide-react';
+import { useSiteCopy } from '../hooks/useSiteCopy';
 
 export default function CookieConsent() {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
+    const copy = useSiteCopy('cookies', lang);
     const { pathname } = useLocation();
     const { showConsentBanner, acceptConsent, declineConsent } = useCRO();
     const [isVisible, setIsVisible] = useState(false);
@@ -51,11 +53,11 @@ export default function CookieConsent() {
                                 <div className="w-10 h-10 rounded-2xl bg-[#F8F5F2] flex items-center justify-center text-[#C4A49A]">
                                     <Cookie size={20} strokeWidth={1.5} />
                                 </div>
-                                <h3 className="text-lg font-normal text-[#2C2826] tracking-tight">{t('common.cookies.title')}</h3>
+                                <h3 className="text-lg font-normal text-[#2C2826] tracking-tight">{copy.title || t('common.cookies.title')}</h3>
                             </div>
 
                             <p className="text-[#5C534F] text-[14px] leading-relaxed mb-8 opacity-90 font-light">
-                                {t('common.cookies.message')}
+                                {copy.message || t('common.cookies.message')}
                             </p>
 
                             <div className="flex flex-col sm:flex-row items-center gap-3">
@@ -63,13 +65,13 @@ export default function CookieConsent() {
                                     onClick={() => handleAction('accepted')}
                                     className="w-full sm:flex-1 bg-[#2C2826] text-white py-4 rounded-2xl text-[11px] font-bold uppercase tracking-[0.2em] hover:bg-black transition-all shadow-lg hover:shadow-xl active:scale-95"
                                 >
-                                    {t('common.cookies.accept')}
+                                    {copy.accept || t('common.cookies.accept')}
                                 </button>
                                 <button
                                     onClick={() => handleAction('declined')}
                                     className="w-full sm:w-auto px-8 py-4 text-[11px] font-bold text-[#8A7369] uppercase tracking-[0.2em] hover:text-[#2C2826] transition-colors border border-[#EBE1DA] rounded-2xl md:border-none"
                                 >
-                                    {t('common.cookies.decline')}
+                                    {copy.decline || t('common.cookies.decline')}
                                 </button>
                             </div>
                         </div>

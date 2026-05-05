@@ -5,9 +5,24 @@ import { useLanguage } from '../context/LanguageContext';
 import { ArrowRight, Plus } from 'lucide-react';
 import { getProducts } from '../admin/services/db';
 
-export default function Hero() {
+export default function Hero({ settings = {}, lang = 'es' }) {
     const { t, translateProduct } = useLanguage();
     const [featuredProduct, setFeaturedProduct] = useState(null);
+
+    // Build the 3 banner cards: prefer admin overrides, fall back to translation defaults.
+    const defaultCards = [
+        { image: 'https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80', title: t('hero.skin_care.title'), desc: t('hero.skin_care.desc'), cta_link: '/categoria/rostro' },
+        { image: 'https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80', title: t('hero.hair_care.title'), desc: t('hero.hair_care.desc'), cta_link: '/categoria/cabello' },
+        { image: 'https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&q=80', title: t('hero.manos_pies.title'), desc: t('hero.manos_pies.desc'), cta_link: '/categoria/manos-pies' }
+    ];
+    const cards = (Array.isArray(settings.cards) && settings.cards.length > 0)
+        ? settings.cards.map((c, i) => ({
+            image: c.image || defaultCards[i % 3]?.image,
+            title: c[`title_${lang}`] || defaultCards[i % 3]?.title,
+            desc: c[`desc_${lang}`] || defaultCards[i % 3]?.desc,
+            cta_link: c.cta_link || defaultCards[i % 3]?.cta_link
+        }))
+        : defaultCards;
 
     useEffect(() => {
         const loadHero = async () => {
@@ -41,72 +56,28 @@ export default function Hero() {
                 animate="visible"
                 className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6 lg:gap-8"
             >
-                {/* Banner 1 */}
-                <motion.div variants={itemVariants} className="relative aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-[#F4EFEA] flex flex-col justify-end group rounded-2xl sm:col-span-2 md:col-span-1 shadow-sm">
-                    <img
-                        src="https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80"
-                        alt={t('hero.skin_care.title')}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#2C2826]/80 via-[#2C2826]/10 to-transparent"></div>
-                    <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent pointer-events-none"></div>
+                {cards.slice(0, 3).map((card, idx) => (
+                    <motion.div key={idx} variants={itemVariants} className={`relative aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-[#F4EFEA] flex flex-col justify-end group rounded-2xl shadow-sm ${idx === 0 ? 'sm:col-span-2 md:col-span-1' : ''}`}>
+                        <img
+                            src={card.image}
+                            alt={card.title}
+                            className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90"
+                        />
+                        <div className="absolute inset-0 bg-gradient-to-t from-[#2C2826]/80 via-[#2C2826]/10 to-transparent"></div>
+                        <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent pointer-events-none"></div>
 
-                    <div className="relative z-10 p-6 md:p-8 flex flex-col items-center text-center">
-                        <h2 className="text-white text-2xl md:text-3xl font-bold mb-2 uppercase tracking-tight">{t('hero.skin_care.title')}</h2>
-                        <p className="text-[#F4EFEA] text-[12px] md:text-[13px] font-light mb-5 opacity-80 max-w-[200px]">{t('hero.skin_care.desc')}</p>
-                        <Link
-                            to="/categoria/rostro"
-                            className="bg-white text-[#2C2826] px-6 py-2.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#C4A49A] hover:text-white transition-all transform active:scale-95"
-                        >
-                            {t('hero.discover')}
-                        </Link>
-                    </div>
-                </motion.div>
-
-                {/* Banner 2 */}
-                <motion.div variants={itemVariants} className="relative aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-[#F4EFEA] flex flex-col justify-end group rounded-2xl shadow-sm">
-                    <img
-                        src="https://images.unsplash.com/photo-1522337660859-02fbefca4702?auto=format&fit=crop&q=80"
-                        alt={t('hero.hair_care.title')}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#2C2826]/80 via-[#2C2826]/10 to-transparent"></div>
-                    <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent pointer-events-none"></div>
-
-                    <div className="relative z-10 p-6 md:p-8 flex flex-col items-center text-center">
-                        <h2 className="text-white text-2xl md:text-3xl font-bold mb-2 uppercase tracking-tight">{t('hero.hair_care.title')}</h2>
-                        <p className="text-[#F4EFEA] text-[12px] md:text-[13px] font-light mb-5 opacity-80 max-w-[200px]">{t('hero.hair_care.desc')}</p>
-                        <Link
-                            to="/categoria/cabello"
-                            className="bg-white text-[#2C2826] px-6 py-2.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#C4A49A] hover:text-white transition-all transform active:scale-95"
-                        >
-                            {t('hero.discover')}
-                        </Link>
-                    </div>
-                </motion.div>
-
-                {/* Banner 3 */}
-                <motion.div variants={itemVariants} className="relative aspect-[4/5] md:aspect-[3/4] overflow-hidden bg-[#F4EFEA] flex flex-col justify-end group rounded-2xl shadow-sm">
-                    <img
-                        src="https://images.unsplash.com/photo-1519014816548-bf5fe059798b?auto=format&fit=crop&q=80"
-                        alt={t('hero.manos_pies.title')}
-                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105 opacity-90"
-                    />
-
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#2C2826]/80 via-[#2C2826]/10 to-transparent"></div>
-                    <div className="absolute inset-x-0 top-0 h-1/2 bg-gradient-to-b from-black/40 to-transparent pointer-events-none"></div>
-
-                    <div className="relative z-10 p-6 md:p-8 flex flex-col items-center text-center">
-                        <h2 className="text-white text-2xl md:text-3xl font-bold mb-2 uppercase tracking-tight">{t('hero.manos_pies.title')}</h2>
-                        <p className="text-[#F4EFEA] text-[12px] md:text-[13px] font-light mb-5 opacity-80 max-w-[200px]">{t('hero.manos_pies.desc')}</p>
-                        <Link
-                            to="/categoria/manos-pies"
-                            className="bg-white text-[#2C2826] px-6 py-2.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#C4A49A] hover:text-white transition-all transform active:scale-95"
-                        >
-                            {t('hero.discover')}
-                        </Link>
-                    </div>
-                </motion.div>
+                        <div className="relative z-10 p-6 md:p-8 flex flex-col items-center text-center">
+                            <h2 className="text-white text-2xl md:text-3xl font-bold mb-2 uppercase tracking-tight">{card.title}</h2>
+                            <p className="text-[#F4EFEA] text-[12px] md:text-[13px] font-light mb-5 opacity-80 max-w-[200px]">{card.desc}</p>
+                            <Link
+                                to={card.cta_link}
+                                className="bg-white text-[#2C2826] px-6 py-2.5 text-[10px] md:text-[11px] font-bold tracking-widest uppercase rounded-xl shadow-lg hover:bg-[#C4A49A] hover:text-white transition-all transform active:scale-95"
+                            >
+                                {t('hero.discover')}
+                            </Link>
+                        </div>
+                    </motion.div>
+                ))}
 
             </motion.div>
 

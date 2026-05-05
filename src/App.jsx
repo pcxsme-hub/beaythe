@@ -1,6 +1,7 @@
 // src/App.jsx
 import React, { useState, useEffect } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { useTheme, applyThemeVars } from './hooks/useTheme';
 import Navbar from './components/Navbar';
 import CartDrawer from './components/CartDrawer';
 import FavoritesDrawer from './components/FavoritesDrawer';
@@ -18,6 +19,12 @@ import Inventory from './admin/pages/Inventory';
 import StorefrontManager from './admin/pages/StorefrontManager';
 import DropeaIntegration from './admin/pages/DropeaIntegration';
 import ProductEditor from './admin/pages/ProductEditor';
+import LandingEngine from './admin/pages/LandingEngine';
+import HomeBuilder from './admin/pages/HomeBuilder';
+import SiteCopyAdmin from './admin/pages/SiteCopy';
+import NavBuilder from './admin/pages/NavBuilder';
+import ThemeAdmin from './admin/pages/ThemeAdmin';
+import Marketing from './admin/pages/Marketing';
 import Categoria from './pages/Categoria';
 import SearchResults from './pages/SearchResults';
 import Checkout from './pages/Checkout';
@@ -48,6 +55,8 @@ function App() {
   const { isCartOpen, setIsCartOpen } = useCart();
   const { isFavoritesOpen, closeFavorites, openFavorites } = useFavorites();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const theme = useTheme();
+  useEffect(() => { applyThemeVars(theme); }, [theme]);
 
   // Isolate Admin Rendering from Public UI
   const isAdmin = pathname.startsWith('/admin-core-sys');
@@ -61,6 +70,12 @@ function App() {
             <Route path="inventory" element={<Inventory />} />
             <Route path="storefront" element={<StorefrontManager />} />
             <Route path="dropea" element={<DropeaIntegration />} />
+            <Route path="landing-engine" element={<LandingEngine />} />
+            <Route path="home-builder" element={<HomeBuilder />} />
+            <Route path="site-copy" element={<SiteCopyAdmin />} />
+            <Route path="navigation" element={<NavBuilder />} />
+            <Route path="theme" element={<ThemeAdmin />} />
+            <Route path="marketing" element={<Marketing />} />
             <Route path="produtos/editar/:id" element={<ProductEditor />} />
           </Route>
         </Routes>

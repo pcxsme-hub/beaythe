@@ -10,21 +10,27 @@ const iconMap = {
     Calendar
 };
 
-export default function TrustStrip() {
+export default function TrustStrip({ settings = {}, lang = 'es' }) {
     const { t } = useLanguage();
-    const trustItems = t('trust');
+    const fallbackItems = t('trust');
 
-    // Fallback in case t('trust') is not yet available or returns the key
+    // Prefer admin-overridden items if present
+    const adminItems = Array.isArray(settings.items)
+        ? settings.items.map(it => ({ id: it.icon, icon: it.icon, title: it[`title_${lang}`] || it.title_es || it.title_pt || it.title_en }))
+        : null;
+
+    const trustItems = adminItems && adminItems.length > 0 ? adminItems : fallbackItems;
+
     if (!trustItems || !Array.isArray(trustItems)) return null;
 
     return (
         <section className="py-16 bg-white border-y border-[#F1EBE6]">
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-y-12 gap-x-8 items-start">
-                    {trustItems.map((item) => {
+                    {trustItems.map((item, idx) => {
                         const Icon = iconMap[item.icon] || Headphones;
                         return (
-                            <div key={item.id} className="flex flex-col items-center text-center group">
+                            <div key={item.id || idx} className="flex flex-col items-center text-center group">
                                 <div className="w-20 h-20 rounded-full bg-[#F4EFEA] flex items-center justify-center mb-6 transition-all duration-500 group-hover:scale-110 group-hover:bg-[#EBE1DA] shadow-sm">
                                     <Icon size={28} className="text-[#8A7369]" strokeWidth={1.25} />
                                 </div>

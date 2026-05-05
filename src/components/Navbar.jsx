@@ -5,11 +5,13 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
 import { useCRO } from '../context/CROContext';
+import { useNavConfig } from '../hooks/useNavConfig';
+import { getLivePromoBanners } from '../admin/services/db';
 
-const topNavKeys = ["rostro", "cuerpo", "cabello", "perfumes", "outlet"];
+const fallbackTopNavKeys = ["rostro", "cuerpo", "cabello", "perfumes", "outlet"];
 
-// Mega Menu Data using translation keys with static, high-quality images
-const megaMenuData = {
+// Mega Menu fallback (used when admin hasn't customised nav)
+const fallbackMegaMenuData = {
     "rostro": [
         { name: "cuidado_facial", imgs: ["https://images.unsplash.com/photo-1556228578-0d85b1a4d571?auto=format&fit=crop&q=80&w=300"], items: ["limpiadores", "tonicos", "serums", "cremas", "contorno", "mascarillas"] },
         { name: "maquillaje_facial", imgs: ["https://images.unsplash.com/photo-1596462502278-27bfdc403348?auto=format&fit=crop&q=80&w=300"], items: ["base", "correctores", "polvo", "rubor", "labios"] },
@@ -48,6 +50,12 @@ const searchSuggestions = [
 export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
     const { getCartCount } = useCart();
     const { lang, t, toggleLanguage } = useLanguage();
+    const { config: navConfig } = useNavConfig();
+
+    // Build dynamic top nav and mega menu from admin overrides, falling back
+    // to the hardcoded defaults when no DB row exists yet.
+    const topNavItems = (navConfig?.top_nav?.length ? navConfig.top_nav : null) || fallbackTopNavKeys.map(k => ({ key: k, label_es: k, label_pt: k, label_en: k, link: `/categoria/${k}`, hasMegaMenu: true, isOutlet: k === 'outlet' }));
+    const megaMenuData = (navConfig?.mega_menu && Object.keys(navConfig.mega_menu).length) ? navConfig.mega_menu : fallbackMegaMenuData;
     const { trackInterest } = useCRO();
     const navigate = useNavigate();
     const [isScrolled, setIsScrolled] = useState(false);
@@ -164,9 +172,26 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
 
     useEffect(() => () => { if (closeMenuTimer.current) clearTimeout(closeMenuTimer.current); }, []);
 
+    // Live promo banner (TOP placement) — replaces the default announcement when present.
+    const [topBanner, setTopBanner] = useState(null);
+    useEffect(() => {
+        getLivePromoBanners('TOP').then(list => {
+            if (Array.isArray(list) && list.length) setTopBanner(list[0]);
+        });
+    }, []);
+
     return (
         <header ref={navRef} className={`fixed w-full top-0 z-50 transition-all duration-500 ease-in-out ${isVisible ? 'translate-y-0' : '-translate-y-full'} ${forceSolid ? 'bg-white shadow-sm' : 'bg-gradient-to-b from-black/50 via-black/20 to-transparent'}`}>
 
+            {/* Promo banner (admin-managed) — top strip overrides nothing, sits ABOVE the announcement bar */}
+            {topBanner && (
+                <div style={{ background: topBanner.bg_color, color: topBanner.text_color }} className="w-full py-2 px-4 text-center text-[11px] font-bold tracking-widest uppercase">
+                    {topBanner[`message_${lang}`] || topBanner.message_es}
+                    {topBanner.cta_link && (topBanner[`cta_label_${lang}`] || topBanner.cta_label_es) && (
+                        <a href={topBanner.cta_link} className="ml-3 underline underline-offset-4">{topBanner[`cta_label_${lang}`] || topBanner.cta_label_es} →</a>
+                    )}
+                </div>
+            )}
 
             {/* Announcement Bar */}
             <div className={`transition-colors duration-500 ${forceSolid ? 'bg-[#EBE1DA] text-[#4A423F]' : 'bg-black/30 text-white backdrop-blur-md'} py-2.5 px-4 flex justify-between items-center relative overflow-hidden h-10`}>
@@ -357,23 +382,25 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
                         className={`hidden lg:flex items-center justify-center space-x-6 xl:space-x-8 py-4 overflow-x-auto whitespace-nowrap border-t ${forceSolid ? 'border-[#F1EBE6]' : 'border-white/20'} relative transition-colors duration-500`}
                     >
 
-                        {topNavKeys.map((key, idx) => {
-                            const hasMegaMenu = !!megaMenuData[key];
+                        {topNavItems.map((item, idx) => {
+                            const key = item.key;
+                            const label = item[`label_${lang}`] || item.label_es || t(`nav.${key}`);
+                            const hasMegaMenu = !!(item.hasMegaMenu && megaMenuData[key]);
                             const isActive = activeMenu === key;
+                            const isOutlet = item.isOutlet || key === 'outlet';
 
                             return (
                                 <button
-                                    key={idx}
+                                    key={key || idx}
                                     onClick={() => toggleMenu(key)}
                                     onMouseEnter={() => openMenuOnHover(key)}
                                     className={`relative text-[13px] tracking-wide transition-all duration-300 flex items-center gap-1.5 focus:outline-none
                   after:content-[''] after:absolute after:-bottom-1 after:left-0 after:h-[1px] after:w-full after:origin-left after:transition-transform after:duration-300 after:ease-out
                   ${isActive ? 'text-[#C4A49A] after:scale-x-100 after:bg-[#C4A49A]' : 'after:scale-x-0 outline-none'}
-                  ${!isActive ? (key === 'outlet' ? 'text-[#C4A49A] font-medium after:bg-[#C4A49A] hover:after:scale-x-100' : `${forceSolid ? 'text-[#5C534F] hover:text-[#2C2826]' : 'text-white/90 hover:text-white drop-shadow-sm'} font-normal after:bg-current hover:after:scale-x-100`) : ''}
-
+                  ${!isActive ? (isOutlet ? 'text-[#C4A49A] font-medium after:bg-[#C4A49A] hover:after:scale-x-100' : `${forceSolid ? 'text-[#5C534F] hover:text-[#2C2826]' : 'text-white/90 hover:text-white drop-shadow-sm'} font-normal after:bg-current hover:after:scale-x-100`) : ''}
                 `}
                                 >
-                                    {t(`nav.${key}`)}
+                                    {label}
                                     {hasMegaMenu && (
                                         <ChevronDown size={14} className={`transition-transform duration-300 ${isActive ? 'rotate-180 text-[#C4A49A]' : (forceSolid ? 'text-[#9C9490]' : 'text-white/60')}`} />
                                     )}
@@ -399,54 +426,58 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
                     >
                         <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 py-10">
                             <div className="flex justify-center gap-6 xl:gap-10 overflow-x-auto custom-scrollbar pb-6">
-                                {megaMenuData[activeMenu].map((item, idx) => (
-                                    <div key={idx} className="flex flex-col items-center gap-4 group cursor-pointer w-[120px] flex-shrink-0">
-                                        <div className="w-[100px] h-[100px] rounded-[24px] overflow-hidden bg-[#F4EFEA] shadow-sm group-hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] transition-all duration-300 border border-[#F1EBE6] relative">
-                                            <AnimatePresence mode="wait">
-                                                <motion.img
-                                                    key={megaImgIdx}
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    transition={{ duration: 1.5, ease: "easeInOut" }}
-                                                    src={item.imgs[megaImgIdx]}
-                                                    alt={t(`nav.${item.name}`)}
+                                {megaMenuData[activeMenu].map((item, idx) => {
+                                    const itemLabel = item[`label_${lang}`] || item.label_es || (item.name ? t(`nav.${item.name}`) : '');
+                                    const itemImage = item.image || (item.imgs && item.imgs[megaImgIdx]) || '';
+                                    const itemLink = item.link || `/categoria/${item.name}`;
+                                    const subItems = Array.isArray(item.items) && item.items.length
+                                        ? item.items
+                                        : (item.name ? [{ name: item.name, label_es: itemLabel, label_pt: itemLabel, label_en: itemLabel, link: itemLink }] : []);
+                                    return (
+                                        <div key={item.name || idx} className="flex flex-col items-center gap-4 group cursor-pointer w-[120px] flex-shrink-0">
+                                            <div className="w-[100px] h-[100px] rounded-[24px] overflow-hidden bg-[#F4EFEA] shadow-sm group-hover:shadow-[0_8px_20px_rgba(0,0,0,0.08)] transition-all duration-300 border border-[#F1EBE6] relative">
+                                                <img
+                                                    src={itemImage}
+                                                    alt={itemLabel}
                                                     className="w-full h-full object-cover"
                                                 />
-                                            </AnimatePresence>
-                                        </div>
-                                        <div className="text-center w-full">
-                                            {(() => {
-                                                const catPath = item.name === 'ultimas' ? 'outlet' : (item.name === 'promociones' ? 'outlet' : (item.name === 'manos_pies' ? 'manos-pies' : item.name));
-                                                return (
-                                                    <>
-                                                        <h4 className="text-[14px] font-bold text-[#C4A49A] mb-2 group-hover:text-[#8A7369] transition-colors truncate">
-                                                            <Link to={`/categoria/${catPath}`} onClick={() => setActiveMenu(null)}>{t(`nav.${item.name}`)}</Link>
-                                                        </h4>
-                                                        <div className="flex flex-col gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
-                                                            {(item.items || [item.name]).map((itName, sIdx) => (
-                                                                <Link key={sIdx} to={`/categoria/${itName === 'ultimas' ? 'outlet' : (itName === 'promociones' ? 'outlet' : (itName === 'manos_pies' ? 'manos-pies' : itName))}`} onClick={() => setActiveMenu(null)} className="text-[12px] text-[#5C534F] font-light hover:text-[#C4A49A] transition-colors truncate">
-                                                                    {t(`nav.${itName}`)}
+                                            </div>
+                                            <div className="text-center w-full">
+                                                <h4 className="text-[14px] font-bold text-[#C4A49A] mb-2 group-hover:text-[#8A7369] transition-colors truncate">
+                                                    <Link to={itemLink} onClick={() => setActiveMenu(null)}>{itemLabel}</Link>
+                                                </h4>
+                                                {subItems.length > 0 && (
+                                                    <div className="flex flex-col gap-1.5 opacity-80 group-hover:opacity-100 transition-opacity">
+                                                        {subItems.map((sub, sIdx) => {
+                                                            const subLabel = (typeof sub === 'string')
+                                                                ? t(`nav.${sub}`)
+                                                                : (sub[`label_${lang}`] || sub.label_es || (sub.name ? t(`nav.${sub.name}`) : ''));
+                                                            const subLink = (typeof sub === 'string')
+                                                                ? `/categoria/${sub}`
+                                                                : (sub.link || `/categoria/${sub.name}`);
+                                                            return (
+                                                                <Link key={sIdx} to={subLink} onClick={() => setActiveMenu(null)} className="text-[12px] text-[#5C534F] font-light hover:text-[#C4A49A] transition-colors truncate">
+                                                                    {subLabel}
                                                                 </Link>
-                                                            ))}
-                                                        </div>
-                                                    </>
-                                                );
-                                            })()}
+                                                            );
+                                                        })}
+                                                    </div>
+                                                )}
+                                            </div>
                                         </div>
-                                    </div>
-                                ))}
+                                    );
+                                })}
                             </div>
                         </div>
                     </motion.div>
                 )}
             </AnimatePresence>
 
-            {/* Breadcrumbs / Tags - Optional for navigation feel */}
+            {/* Breadcrumbs / Tags - mobile, dynamic from nav config */}
             <div className="flex md:hidden overflow-x-auto py-2 no-scrollbar gap-4 mt-1 border-t border-[#F1EBE6]/20">
-                {Object.keys(megaMenuData).map(key => (
-                    <Link key={key} to={`/categoria/${key}`} className={`text-[11px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors ${forceSolid ? 'text-[#8A7369]' : 'text-white/70'}`}>
-                        {t(`nav.${key}`)}
+                {topNavItems.map(item => (
+                    <Link key={item.key} to={item.link || `/categoria/${item.key}`} className={`text-[11px] font-bold uppercase tracking-widest whitespace-nowrap transition-colors ${forceSolid ? 'text-[#8A7369]' : 'text-white/70'}`}>
+                        {item[`label_${lang}`] || item.label_es || t(`nav.${item.key}`)}
                     </Link>
                 ))}
             </div>
@@ -489,14 +520,14 @@ export default function Navbar({ onCartClick, onFavoritesClick, onUserClick }) {
                                     </div>
                                 </div>
 
-                                {Object.keys(megaMenuData).map(key => (
+                                {topNavItems.map(item => (
                                     <Link
-                                        key={key}
-                                        to={`/categoria/${key}`}
-                                        onClick={() => { setIsMobileMenuOpen(false); trackInterest(key); }}
+                                        key={item.key}
+                                        to={item.link || `/categoria/${item.key}`}
+                                        onClick={() => { setIsMobileMenuOpen(false); trackInterest(item.key); }}
                                         className="flex items-center justify-between p-4 bg-[#FCFAF8] rounded-2xl group active:bg-[#F4EFEA]"
                                     >
-                                        <span className="text-[14px] font-bold text-[#2C2826] uppercase tracking-wide">{t(`nav.${key}`)}</span>
+                                        <span className="text-[14px] font-bold text-[#2C2826] uppercase tracking-wide">{item[`label_${lang}`] || item.label_es || t(`nav.${item.key}`)}</span>
                                         <ChevronRight size={18} className="text-[#C4A49A]" />
                                     </Link>
                                 ))}

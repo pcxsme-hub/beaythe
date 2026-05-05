@@ -136,3 +136,170 @@ export const generateSEOUrls = async () => {
 // Virtual Master Data for SEO Factory
 export const getSEOCities = () => ['São Paulo', 'Rio de Janeiro', 'Lisboa', 'Porto', 'Madrid', 'Barcelona'];
 export const getSEOPains = () => ['Acne Severa', 'Manchas Escuras', 'Pele Oleosa', 'Rugas Finas', 'Lábios Ressecados'];
+
+// --- LP Engine (admin-editable) ---
+
+export const getLandingCategories = async () => {
+    try {
+        const res = await fetch(`${API_URL}/landing/categories`, { cache: 'no-store' });
+        return res.json();
+    } catch { return []; }
+};
+
+export const upsertLandingCategory = async (data) => {
+    const res = await fetch(`${API_URL}/landing/categories`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+};
+
+export const deleteLandingCategory = async (id) => {
+    const res = await fetch(`${API_URL}/landing/categories/${id}`, { method: 'DELETE' });
+    return res.json();
+};
+
+export const resetLandingCategory = async (slug) => {
+    const res = await fetch(`${API_URL}/landing/categories/reset/${slug}`, { method: 'POST' });
+    return res.json();
+};
+
+export const seedLandingDefaults = async () => {
+    const res = await fetch(`${API_URL}/landing/categories/seed`, { method: 'POST' });
+    return res.json();
+};
+
+export const getBundleRule = async () => {
+    try {
+        const res = await fetch(`${API_URL}/landing/bundle-rule`, { cache: 'no-store' });
+        return res.json();
+    } catch { return null; }
+};
+
+export const updateBundleRule = async (data) => {
+    const res = await fetch(`${API_URL}/landing/bundle-rule`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+};
+
+export const previewLandingForProduct = async (productId, locale = 'es') => {
+    const res = await fetch(`${API_URL}/landing/preview/${productId}?locale=${locale}`, { cache: 'no-store' });
+    return res.json();
+};
+
+export const regenerateLanding = async (productId, locale = 'es') => {
+    const res = await fetch(`${API_URL}/landing/regenerate/${productId}?locale=${locale}`, { method: 'POST' });
+    return res.json();
+};
+
+export const regenerateAllLanding = async (locale = 'es') => {
+    const res = await fetch(`${API_URL}/landing/regenerate-all?locale=${locale}`, { method: 'POST' });
+    return res.json();
+};
+
+// --- Home Builder ---
+
+export const getHomeConfig = async () => {
+    try {
+        const res = await fetch(`${API_URL}/home`, { cache: 'no-store' });
+        return res.json();
+    } catch { return { sections: [] }; }
+};
+
+export const updateHomeConfig = async (sections) => {
+    const res = await fetch(`${API_URL}/home`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ sections })
+    });
+    return res.json();
+};
+
+export const resetHomeConfig = async () => {
+    const res = await fetch(`${API_URL}/home/reset`, { method: 'POST' });
+    return res.json();
+};
+
+// --- Site Copy (Phase 2B) ---
+
+export const getSiteCopyGroups = async () => {
+    try { return (await fetch(`${API_URL}/site-copy/groups`)).json(); } catch { return []; }
+};
+
+export const getAllSiteCopy = async () => {
+    try { return (await fetch(`${API_URL}/site-copy`, { cache: 'no-store' })).json(); } catch { return {}; }
+};
+
+export const updateSiteCopy = async (key, data) => {
+    const res = await fetch(`${API_URL}/site-copy/${key}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+    });
+    return res.json();
+};
+
+export const resetSiteCopy = async (key) => {
+    const res = await fetch(`${API_URL}/site-copy/${key}/reset`, { method: 'POST' });
+    return res.json();
+};
+
+// --- Nav Config (Phase 2C) ---
+export const getNavConfig = async () => {
+    try { return (await fetch(`${API_URL}/nav`, { cache: 'no-store' })).json(); } catch { return null; }
+};
+export const updateNavConfig = async (data) => {
+    const res = await fetch(`${API_URL}/nav`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return res.json();
+};
+export const resetNavConfig = async () => {
+    const res = await fetch(`${API_URL}/nav/reset`, { method: 'POST' });
+    return res.json();
+};
+
+// --- Theme (Phase 2D) ---
+export const getTheme = async () => {
+    try { return (await fetch(`${API_URL}/theme`, { cache: 'no-store' })).json(); } catch { return null; }
+};
+export const updateTheme = async (data) => {
+    const res = await fetch(`${API_URL}/theme`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return res.json();
+};
+export const resetTheme = async () => {
+    const res = await fetch(`${API_URL}/theme/reset`, { method: 'POST' });
+    return res.json();
+};
+
+// --- Marketing (Phase 2E) ---
+export const getCoupons = async () => {
+    try { return (await fetch(`${API_URL}/marketing/coupons`, { cache: 'no-store' })).json(); } catch { return []; }
+};
+export const upsertCoupon = async (data) => {
+    const res = await fetch(`${API_URL}/marketing/coupons`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return res.json();
+};
+export const deleteCoupon = async (id) => {
+    const res = await fetch(`${API_URL}/marketing/coupons/${id}`, { method: 'DELETE' });
+    return res.json();
+};
+export const validateCoupon = async (code, subtotal) => {
+    try { return (await fetch(`${API_URL}/marketing/coupons/validate/${encodeURIComponent(code)}?subtotal=${subtotal}`)).json(); } catch { return { valid: false, error: 'network' }; }
+};
+export const getPromoBanners = async () => {
+    try { return (await fetch(`${API_URL}/marketing/banners`, { cache: 'no-store' })).json(); } catch { return []; }
+};
+export const getLivePromoBanners = async (placement, segment = 'ALL') => {
+    try { return (await fetch(`${API_URL}/marketing/banners/live?placement=${placement || ''}&segment=${segment}`, { cache: 'no-store' })).json(); } catch { return []; }
+};
+export const upsertPromoBanner = async (data) => {
+    const res = await fetch(`${API_URL}/marketing/banners`, { method: 'PUT', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(data) });
+    return res.json();
+};
+export const deletePromoBanner = async (id) => {
+    const res = await fetch(`${API_URL}/marketing/banners/${id}`, { method: 'DELETE' });
+    return res.json();
+};

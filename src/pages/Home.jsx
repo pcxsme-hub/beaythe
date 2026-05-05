@@ -11,25 +11,48 @@ import TrustStrip from '../components/TrustStrip';
 import SkinQuiz from '../components/SkinQuiz';
 import ProductTabs from '../components/ProductTabs';
 import { useLanguage } from '../context/LanguageContext';
+import { useHomeConfig } from '../hooks/useHomeConfig';
 
+const COMPONENT_BY_TYPE = {
+    FeaturedCarousel,
+    Marquee,
+    AboutUs,
+    HeroCards: Hero,
+    SkinQuiz,
+    CircularCategories,
+    ProductTabs,
+    TrustStrip,
+    TrendingProducts,
+    Reviews,
+    FAQ
+};
 
 export default function Home() {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
+    const { sections, ready } = useHomeConfig();
+
+    if (!ready) {
+        return <div className="min-h-screen flex items-center justify-center bg-[#FCFAF8]"><div className="w-12 h-12 border-4 border-[#F1EBE6] border-t-[#C4A49A] rounded-full animate-spin" /></div>;
+    }
+
     return (
         <>
-            <FeaturedCarousel />
-            <Marquee />
-            <Hero />
-            <SkinQuiz />
-            <CircularCategories />
-            <ProductTabs />
-            <TrustStrip />
-
-            <TrendingProducts type="new" overrideTitle={t('filters.sort_options.novidades')} />
-            <TrendingProducts />
-            <Reviews />
-            <FAQ />
-            <AboutUs />
+            {sections.filter(s => s.enabled).map(section => {
+                const Component = COMPONENT_BY_TYPE[section.type];
+                if (!Component) return null;
+                const settings = section.settings || {};
+                // Per-type prop mapping
+                const props = { key: section.id, settings, lang };
+                if (section.type === 'TrendingProducts') {
+                    if (settings.sourceType === 'new') {
+                        props.type = 'new';
+                        props.overrideTitle = settings[`overrideTitle_${lang}`] || t('filters.sort_options.novidades');
+                    } else if (settings[`overrideTitle_${lang}`]) {
+                        props.overrideTitle = settings[`overrideTitle_${lang}`];
+                    }
+                }
+                return <Component {...props} />;
+            })}
         </>
     );
 }

@@ -15,6 +15,8 @@ model Product {
   stock       Int      @default(0)
   description String?
   image_url   String?
+  category    String?
+  product_type String?
   tags        String   @default("[]") // JSON estético array
   upsell_kits String   @default("[]") // JSON relationships
 
@@ -52,4 +54,136 @@ model StoreSettings {
   profit_margin_percent Float    @default(30.0)
   fixed_shipping_cost   Float    @default(7.00)
   updatedAt             DateTime @updatedAt
+}
+
+// --- Landing Page Engine ---
+// Each LandingCategory holds detection keywords + a copy bank per locale that
+// the deterministic engine uses to build per-product landing pages.
+model LandingCategory {
+  id           Int      @id @default(autoincrement())
+  slug         String   @unique // "serum", "mascara", "labios", "general"
+  enabled      Boolean  @default(true)
+  is_default   Boolean  @default(false) // fallback bucket when no category matches
+  order        Int      @default(0)
+
+  label_es     String   @default("")
+  label_pt     String   @default("")
+  label_en     String   @default("")
+
+  // JSON arrays of keywords (case-insensitive substrings)
+  keywords_es  String   @default("[]")
+  keywords_pt  String   @default("[]")
+  keywords_en  String   @default("[]")
+
+  // JSON copy banks per locale: { headlines:[...], benefits:[{title,desc}], faqs:[{q,a}], routine:[{name,desc}], hooks:[...] }
+  copy_es      String   @default("{}")
+  copy_pt      String   @default("{}")
+  copy_en      String   @default("{}")
+
+  default_image_url String?
+
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Discount coupons. Validation done at checkout (free-form for now).
+model Coupon {
+  id              Int      @id @default(autoincrement())
+  code            String   @unique
+  description     String?
+  discount_pct    Float    @default(0) // % off
+  min_subtotal    Float    @default(0)
+  max_uses        Int?     // null = unlimited
+  used_count      Int      @default(0)
+  starts_at       DateTime?
+  ends_at         DateTime?
+  enabled         Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Promotional banners (top strip / hero overlay / sidebar). Each banner targets
+// a placement and optional segments (visit count, returning, abandoned cart).
+model PromoBanner {
+  id              Int      @id @default(autoincrement())
+  name            String
+  placement       String   @default("TOP")  // TOP | HERO | SIDE
+  enabled         Boolean  @default(true)
+  message_es      String   @default("")
+  message_pt      String   @default("")
+  message_en      String   @default("")
+  cta_label_es    String   @default("")
+  cta_label_pt    String   @default("")
+  cta_label_en    String   @default("")
+  cta_link        String   @default("")
+  bg_color        String   @default("#C4A49A")
+  text_color      String   @default("#FFFFFF")
+  segment         String   @default("ALL") // ALL | NEW | RETURNING | CART_ABANDONED
+  starts_at       DateTime?
+  ends_at         DateTime?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Singleton (id = 1) with theme tokens: brand palette, logo, typography, radius.
+model ThemeConfig {
+  id              Int      @id @default(1)
+  brand_name      String   @default("Beauthé")
+  logo_url        String?
+  favicon_url     String?
+  color_primary   String   @default("#2C2826")
+  color_accent    String   @default("#C4A49A")
+  color_bg        String   @default("#FCFAF8")
+  color_surface   String   @default("#F4EFEA")
+  color_border    String   @default("#F1EBE6")
+  color_text      String   @default("#5C534F")
+  font_heading    String   @default("Outfit")
+  font_body       String   @default("Outfit")
+  radius_sm       Int      @default(12)
+  radius_md       Int      @default(20)
+  radius_lg       Int      @default(32)
+  updatedAt       DateTime @updatedAt
+}
+
+// Singleton (id = 1) with full navigation: top categories nav, megamenu data and
+// footer columns. Stored as JSON for flexible structure across all 3 locales.
+model NavConfig {
+  id        Int      @id @default(1)
+  top_nav   String   @default("[]") // JSON array of {key, label_*, link, hasMegaMenu, isOutlet}
+  mega_menu String   @default("{}") // JSON object {key: [{name, label_*, image, link, items:[{name,label_*,link}]}]}
+  footer    String   @default("[]") // JSON array of {title_*, links:[{label_*, link}]}
+  updatedAt DateTime @updatedAt
+}
+
+// Editable site-wide copy (footer, drawers, cookies, newsletter, story page,
+// FAQ page, help page). Each row is keyed by a stable string slug; values
+// are JSON-serialized per locale so any structure can be stored.
+model SiteCopy {
+  id        Int      @id @default(autoincrement())
+  key       String   @unique // e.g. "footer", "about_drawer", "cookies", "newsletter", "historia"
+  value_es  String   @default("{}")
+  value_pt  String   @default("{}")
+  value_en  String   @default("{}")
+  updatedAt DateTime @updatedAt
+}
+
+// Singleton (id = 1) holding the homepage layout: which sections show, in what
+// order, and any per-section overrides. Stored as JSON for forward compatibility.
+model HomeConfig {
+  id        Int      @id @default(1)
+  sections  String   @default("[]") // JSON array of {id,type,enabled,order,settings}
+  updatedAt DateTime @updatedAt
+}
+
+// Singleton (id = 1) controlling the "frequently bought together" / bundle scoring.
+model BundleRule {
+  id                   Int      @id @default(1)
+  category_weight      Float    @default(2.0)
+  tag_weight           Float    @default(1.0)
+  price_weight         Float    @default(1.0)
+  price_range_pct      Float    @default(30.0)
+  min_score            Float    @default(2.0)
+  default_discount_pct Float    @default(10.0)
+  max_kit_size         Int      @default(3)
+  updatedAt            DateTime @updatedAt
 }

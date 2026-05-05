@@ -2,9 +2,15 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { Instagram, Mail } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSiteCopy } from '../hooks/useSiteCopy';
+import { useNavConfig } from '../hooks/useNavConfig';
 
 export default function Footer() {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
+    const copy = useSiteCopy('footer', lang);
+    const { config: navConfig } = useNavConfig();
+    const get = (key, fallbackKey) => copy[key] || t(fallbackKey);
+    const footerColumns = (Array.isArray(navConfig?.footer) && navConfig.footer.length) ? navConfig.footer : null;
 
     return (
         <footer className="bg-[#F4EFEA] pt-20 pb-12 mt-auto border-t border-[#EAE3DE]">
@@ -19,55 +25,59 @@ export default function Footer() {
                     </div>
                 </div>
 
-                {/* Coluna 2 - Categorías */}
-                <div>
-                    <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{t('footer.categories_title')}</h3>
-                    <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
-                        <li><Link to="/categoria/rostro" className="hover:text-[#C4A49A] transition-colors">{t('nav.rostro')}</Link></li>
-                        <li><Link to="/categoria/maquillaje" className="hover:text-[#C4A49A] transition-colors">{t('nav.maquillaje')}</Link></li>
-                        <li><Link to="/categoria/cuerpo" className="hover:text-[#C4A49A] transition-colors">{t('nav.cuerpo')}</Link></li>
-                        <li><Link to="/categoria/cabello" className="hover:text-[#C4A49A] transition-colors">{t('nav.cabello')}</Link></li>
-                        <li><Link to="/categoria/solares" className="hover:text-[#C4A49A] transition-colors">{t('nav.solares')}</Link></li>
-                    </ul>
-                </div>
-
-                {/* Coluna 3 - Atendimento */}
-                <div>
-                    <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{t('footer.need_help')}</h3>
-                    <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
-                        <li><Link to="/ajuda" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.contact')}</Link></li>
-                        <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.faq')}</Link></li>
-                        <li><Link to="/ajuda" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.support')}</Link></li>
-                    </ul>
-                </div>
-
-                {/* Coluna 4 - Compra */}
-                <div>
-                    <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{t('footer.track_purchase')}</h3>
-                    <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
-                        <li><Link to="/profile" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.my_account')}</Link></li>
-                        <li><Link to="/profile?tab=orders" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.my_orders')}</Link></li>
-                        <li><Link to="/ajuda" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.returns')}</Link></li>
-                        <li><Link to="/profile?tab=track" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.track')}</Link></li>
-                    </ul>
-                </div>
-
-                {/* Coluna 5 - Institucional & Legal */}
-                <div>
-                    <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{t('footer.institutional')}</h3>
-                    <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
-                        <li><Link to="/historia" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.who_we_are')}</Link></li>
-                        <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.terms')}</Link></li>
-                        <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.privacy')}</Link></li>
-                        <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.payments')}</Link></li>
-                        <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.legal_notice')}</Link></li>
-                        <li><Link to="/admin-core-sys" className="hover:text-[#C4A49A] transition-colors font-semibold">{t('footer.links.admin')}</Link></li>
-                    </ul>
-                </div>
+                {/* Footer columns — dynamic from nav config; falls back to translations */}
+                {footerColumns ? footerColumns.map((col, idx) => (
+                    <div key={col.id || idx}>
+                        <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{col[`title_${lang}`] || col.title_es}</h3>
+                        <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
+                            {(col.links || []).map((link, lIdx) => (
+                                <li key={lIdx}>
+                                    <Link to={link.link || '#'} className="hover:text-[#C4A49A] transition-colors">
+                                        {link[`label_${lang}`] || link.label_es}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )) : (
+                    <>
+                        <div>
+                            <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{get('categories_title','footer.categories_title')}</h3>
+                            <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
+                                <li><Link to="/categoria/rostro" className="hover:text-[#C4A49A] transition-colors">{t('nav.rostro')}</Link></li>
+                                <li><Link to="/categoria/maquillaje" className="hover:text-[#C4A49A] transition-colors">{t('nav.maquillaje')}</Link></li>
+                                <li><Link to="/categoria/cuerpo" className="hover:text-[#C4A49A] transition-colors">{t('nav.cuerpo')}</Link></li>
+                                <li><Link to="/categoria/cabello" className="hover:text-[#C4A49A] transition-colors">{t('nav.cabello')}</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{get('need_help','footer.need_help')}</h3>
+                            <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
+                                <li><Link to="/ajuda" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.contact')}</Link></li>
+                                <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.faq')}</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{get('track_purchase','footer.track_purchase')}</h3>
+                            <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
+                                <li><Link to="/profile" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.my_account')}</Link></li>
+                                <li><Link to="/profile?tab=orders" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.my_orders')}</Link></li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 className="text-[14px] font-bold text-[#2C2826] tracking-widest mb-6 uppercase">{get('institutional','footer.institutional')}</h3>
+                            <ul className="space-y-4 text-[13px] text-[#5C534F] font-light">
+                                <li><Link to="/historia" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.who_we_are')}</Link></li>
+                                <li><Link to="/faq" className="hover:text-[#C4A49A] transition-colors">{t('footer.links.terms')}</Link></li>
+                                <li><Link to="/admin-core-sys" className="hover:text-[#C4A49A] transition-colors font-semibold">{t('footer.links.admin')}</Link></li>
+                            </ul>
+                        </div>
+                    </>
+                )}
             </div>
 
             <div className="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8 border-t border-[#EAE3DE] pt-8 mt-12 flex flex-col md:flex-row items-center justify-between text-center md:text-left gap-4">
-                <p className="text-[12px] text-[#8A7369]">{t('footer.copyright_full')}</p>
+                <p className="text-[12px] text-[#8A7369]">{get('copyright_full','footer.copyright_full')}</p>
                 <div className="flex gap-3 items-center text-[#8A7369]">
                     <span className="px-2.5 py-1 rounded-md bg-white border border-[#EAE3DE] text-[10px] font-bold tracking-[0.1em] uppercase">MB WAY</span>
                     <span className="px-2.5 py-1 rounded-md bg-white border border-[#EAE3DE] text-[10px] font-bold tracking-[0.1em] uppercase">Bizum</span>

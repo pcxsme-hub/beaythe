@@ -481,7 +481,21 @@ const translationsData = {
             feature_thin: "Extra Fino",
             feature_soft_focus: "Efecto Soft Focus",
             feature_water_resistant: "Resistente al Agua",
-            reviews: "Reseñas"
+            reviews: "Reseñas",
+            trust: {
+                shipping: "Envío 48h",
+                returns: "30 días devolución",
+                vegan: "100% Vegano",
+                tested: "Dermo testado"
+            },
+            kit_tag: "Comprar en kit",
+            kit_title: "Frecuentemente comprados juntos",
+            kit_desc: "Ahorra al combinar este producto con sus complementos perfectos.",
+            kit_save: "Ahorra",
+            kit_savings: "Ahorras",
+            kit_add: "Añadir kit al carrito",
+            craft_tag: "Hecho con propósito",
+            formulation_tag: "Formulación"
         },
         badges: {
             best_seller: "Más Vendido",
@@ -1050,7 +1064,21 @@ const translationsData = {
             feature_thin: "Extra Fino",
             feature_soft_focus: "Efeito Soft Focus",
             feature_water_resistant: "Resistente à Água",
-            reviews: "Avaliações"
+            reviews: "Avaliações",
+            trust: {
+                shipping: "Envio 48h",
+                returns: "30 dias devolução",
+                vegan: "100% Vegano",
+                tested: "Dermo testado"
+            },
+            kit_tag: "Comprar em kit",
+            kit_title: "Frequentemente comprados juntos",
+            kit_desc: "Poupa ao combinar este produto com os seus complementos perfeitos.",
+            kit_save: "Poupa",
+            kit_savings: "Poupa",
+            kit_add: "Adicionar kit ao carrinho",
+            craft_tag: "Feito com propósito",
+            formulation_tag: "Formulação"
         },
         badges: {
             best_seller: "Mais Vendido",
@@ -1619,7 +1647,21 @@ const translationsData = {
             feature_thin: "Extra Thin",
             feature_soft_focus: "Soft Focus Effect",
             feature_water_resistant: "Water Resistant",
-            reviews: "Reviews"
+            reviews: "Reviews",
+            trust: {
+                shipping: "48h shipping",
+                returns: "30-day returns",
+                vegan: "100% Vegan",
+                tested: "Dermo-tested"
+            },
+            kit_tag: "Buy as a kit",
+            kit_title: "Frequently bought together",
+            kit_desc: "Save when bundling this product with its perfect companions.",
+            kit_save: "Save",
+            kit_savings: "You save",
+            kit_add: "Add kit to cart",
+            craft_tag: "Crafted with purpose",
+            formulation_tag: "Formulation"
         },
         badges: {
             best_seller: "Best Seller",

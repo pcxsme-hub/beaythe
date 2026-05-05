@@ -2,9 +2,12 @@ import React from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { X } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import { useSiteCopy } from '../hooks/useSiteCopy';
 
 export default function AboutDrawer({ isOpen, onClose }) {
-    const { t } = useLanguage();
+    const { t, lang } = useLanguage();
+    const copy = useSiteCopy('about_drawer', lang);
+    const get = (k, fk) => copy[k] || t(fk);
     const principles = ['cruelty_free', 'clean_formulas', 'sustainability', 'transparency'];
     const icons = { cruelty_free: '🌿', clean_formulas: '💧', sustainability: '♻️', transparency: '✨' };
 
@@ -30,7 +33,7 @@ export default function AboutDrawer({ isOpen, onClose }) {
                         {/* Header */}
                         <div className="flex items-center justify-between p-6 border-b border-[#F1EBE6] bg-white">
                             <h2 className="text-2xl font-bold text-[#2C2826] tracking-tight uppercase">
-                                {t('about_drawer.title')}
+                                {get('title','about_drawer.title')}
                             </h2>
                             <button onClick={onClose} aria-label={t('common.close')} className="p-2 text-[#5C534F] hover:text-[#2C2826] transition-colors rounded-full hover:bg-[#F4EFEA]">
                                 <X size={20} strokeWidth={1.5} />
@@ -44,12 +47,12 @@ export default function AboutDrawer({ isOpen, onClose }) {
                                 alt="Beauthé"
                                 className="w-full h-56 object-cover rounded-sm mb-8 shadow-sm"
                             />
-                            <h3 className="text-xl font-medium mb-4 text-[#2C2826] tracking-wide">{t('about_drawer.heading_story')}</h3>
+                            <h3 className="text-xl font-medium mb-4 text-[#2C2826] tracking-wide">{get('heading_story','about_drawer.heading_story')}</h3>
                             <p className="text-[14px] leading-relaxed text-[#5C534F] font-light mb-8">
-                                {t('about_drawer.story')}
+                                {get('story','about_drawer.story')}
                             </p>
 
-                            <h3 className="text-xl font-medium mb-4 text-[#2C2826] tracking-wide">{t('about_drawer.heading_principles')}</h3>
+                            <h3 className="text-xl font-medium mb-4 text-[#2C2826] tracking-wide">{get('heading_principles','about_drawer.heading_principles')}</h3>
                             <ul className="space-y-4 text-[14px] leading-relaxed text-[#5C534F] font-light mb-8">
                                 {principles.map(key => (
                                     <li key={key} className="flex gap-3">
@@ -61,7 +64,7 @@ export default function AboutDrawer({ isOpen, onClose }) {
 
                             <div className="p-6 bg-[#EBE1DA] rounded-sm text-center mb-8 shadow-inner overflow-hidden relative">
                                 <p className="text-[#4A423F] font-medium relative z-10">
-                                    {t('about_drawer.quote')}
+                                    {get('quote','about_drawer.quote')}
                                 </p>
                             </div>
 
@@ -71,7 +74,7 @@ export default function AboutDrawer({ isOpen, onClose }) {
                                 whileTap={{ scale: 0.98 }}
                                 className="w-full bg-[#2C2826] text-white py-4 text-[12px] font-bold tracking-[0.1em] uppercase hover:bg-[#4A423F] transition-colors rounded-sm shadow-md"
                             >
-                                {t('about_drawer.back')}
+                                {get('back','about_drawer.back')}
                             </motion.button>
                         </div>
                     </motion.div>
