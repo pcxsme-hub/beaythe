@@ -6,6 +6,7 @@
   "compatibility_flags": ["nodejs_compat"],
   "workers_dev": false,
   "observability": { "enabled": true },
+  "vars": { "CLARITY_ID": "x5jtni06em" },
   "routes": [
     { "pattern": "beauthe.shop/*", "zone_name": "beauthe.shop" }
   ],
