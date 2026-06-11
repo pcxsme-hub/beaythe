@@ -1,0 +1,19 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "beauthe-api",
+  "main": "worker.js",
+  "compatibility_date": "2026-06-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": false,
+  "observability": { "enabled": true },
+  "routes": [
+    { "pattern": "beauthe.shop/api/*", "zone_name": "beauthe.shop" }
+  ],
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "beauthe-db",
+      "database_id": "995d7836-8255-4499-aa6a-26870c62eab2"
+    }
+  ]
+}
