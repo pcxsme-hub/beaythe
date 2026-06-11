@@ -7,7 +7,7 @@
   "workers_dev": false,
   "observability": { "enabled": true },
   "routes": [
-    { "pattern": "beauthe.shop/api/*", "zone_name": "beauthe.shop" }
+    { "pattern": "beauthe.shop/*", "zone_name": "beauthe.shop" }
   ],
   "d1_databases": [
     {
