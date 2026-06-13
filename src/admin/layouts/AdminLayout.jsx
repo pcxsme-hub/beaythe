@@ -1,12 +1,13 @@
 import React from 'react';
 import { Outlet, Link, useLocation } from 'react-router-dom';
-import { LayoutDashboard, PackageSearch, Store, Sparkles, Settings, Wand2, Layers, FileText, Compass, Palette, Megaphone } from 'lucide-react';
+import { LayoutDashboard, PackageSearch, Store, Sparkles, Settings, Wand2, Layers, FileText, Compass, Palette, Megaphone, LineChart } from 'lucide-react';
 
 export default function AdminLayout() {
     const location = useLocation();
 
     const menu = [
         { path: '/admin-core-sys', label: 'Dashboard', icon: <LayoutDashboard size={20} /> },
+        { path: '/admin-core-sys/sales', label: 'Painel de Vendas', icon: <LineChart size={20} /> },
         { path: '/admin-core-sys/inventory', label: 'Inventário & Preços', icon: <PackageSearch size={20} /> },
         { path: '/admin-core-sys/storefront', label: 'Gestão de Vitrines', icon: <Store size={20} /> },
         { path: '/admin-core-sys/dropea', label: 'Marketplace Dropea', icon: <Sparkles size={20} /> },

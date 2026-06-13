@@ -21,6 +21,33 @@ export const updateOrderStatus = async (id, newStatus) => {
     }
 };
 
+// --- SALES / ORDERS (Real API — Worker /api/admin/orders) ---
+export const getSalesOrders = async () => {
+    try {
+        const res = await fetch(`${API_URL}/admin/orders`, { cache: 'no-store', credentials: 'include' });
+        if (!res.ok) return [];
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+    } catch (e) {
+        console.error('getSalesOrders error:', e);
+        return [];
+    }
+};
+
+export const updateSalesOrderStatus = async (id, status) => {
+    try {
+        const res = await fetch(`${API_URL}/admin/orders/${id}/status`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ status }),
+        });
+        return res.json();
+    } catch (e) {
+        return { error: String(e) };
+    }
+};
+
 // --- PRODUCTS (Real Node API) ---
 export const getProducts = async () => {
     try {

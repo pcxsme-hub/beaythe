@@ -15,6 +15,7 @@ import Historia from './pages/Historia';
 // Admin V2 Subsystem
 import AdminLayout from './admin/layouts/AdminLayout';
 import AdminDashboard from './admin/pages/AdminDashboard';
+import SalesDashboard from './admin/pages/SalesDashboard';
 import Inventory from './admin/pages/Inventory';
 import StorefrontManager from './admin/pages/StorefrontManager';
 import DropeaIntegration from './admin/pages/DropeaIntegration';
@@ -68,6 +69,7 @@ function App() {
           {/* Rota do Admin (Isolada, Sem Header/Footer Público) */}
           <Route path="/admin-core-sys" element={<AdminLayout />}>
             <Route index element={<AdminDashboard />} />
+            <Route path="sales" element={<SalesDashboard />} />
             <Route path="inventory" element={<Inventory />} />
             <Route path="storefront" element={<StorefrontManager />} />
             <Route path="dropea" element={<DropeaIntegration />} />
