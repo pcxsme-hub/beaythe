@@ -1,16 +1,17 @@
-import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
+import { loadStripe } from '@stripe/stripe-js';
+import { EmbeddedCheckoutProvider, EmbeddedCheckout } from '@stripe/react-stripe-js';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
-import { ChevronLeft, CreditCard, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
+import { ChevronLeft, ShieldCheck, Loader2, AlertCircle, Lock } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const API = '/api';
 // Mensagens do fluxo de pagamento (não existem no dicionário global).
 const FLOW_MSG = {
-    es: { processing: 'Redirigiendo al pago seguro…', missing: 'Completa email, nombre, dirección, código postal y ciudad.', generic: 'No se pudo iniciar el pago. Inténtalo de nuevo.', empty: 'Tu carrito está vacío.', canceled: 'Pago cancelado. Tu carrito sigue intacto, puedes intentarlo de nuevo.', redirect_note: 'Te llevaremos a una página de pago segura de Stripe.' },
-    pt: { processing: 'A redirecionar para o pagamento seguro…', missing: 'Preencha email, nome, morada, código postal e cidade.', generic: 'Não foi possível iniciar o pagamento. Tente de novo.', empty: 'O seu carrinho está vazio.', canceled: 'Pagamento cancelado. O seu carrinho continua intacto, pode tentar de novo.', redirect_note: 'Vamos levá-lo a uma página de pagamento segura da Stripe.' },
-    en: { processing: 'Redirecting to secure payment…', missing: 'Please fill in email, name, address, ZIP code and city.', generic: 'Could not start the payment. Please try again.', empty: 'Your cart is empty.', canceled: 'Payment canceled. Your cart is intact, you can try again.', redirect_note: 'You will be taken to a secure Stripe payment page.' },
+    es: { loading: 'Cargando pago seguro…', missing: 'Completa email, nombre, dirección, código postal y ciudad.', generic: 'No se pudo iniciar el pago. Inténtalo de nuevo.', empty: 'Tu carrito está vacío.', canceled: 'Pago cancelado. Tu carrito sigue intacto, puedes intentarlo de nuevo.', pay_title: 'Pago', pay_note: 'El pago se procesa de forma segura aquí mismo (tarjeta, Bizum, Klarna, Multibanco). No sales de la tienda.', continue: 'Continuar al pago', edit: '← Editar mis datos', not_configured: 'El pago no está disponible en este momento. Inténtalo más tarde.' },
+    pt: { loading: 'A carregar o pagamento seguro…', missing: 'Preencha email, nome, morada, código postal e cidade.', generic: 'Não foi possível iniciar o pagamento. Tente de novo.', empty: 'O seu carrinho está vazio.', canceled: 'Pagamento cancelado. O seu carrinho continua intacto, pode tentar de novo.', pay_title: 'Pagamento', pay_note: 'O pagamento é processado em segurança aqui mesmo (cartão, Bizum, Klarna, Multibanco, MB WAY). Você não sai da loja.', continue: 'Continuar para pagamento', edit: '← Editar os meus dados', not_configured: 'O pagamento não está disponível neste momento. Tente mais tarde.' },
+    en: { loading: 'Loading secure payment…', missing: 'Please fill in email, name, address, ZIP code and city.', generic: 'Could not start the payment. Please try again.', empty: 'Your cart is empty.', canceled: 'Payment canceled. Your cart is intact, you can try again.', pay_title: 'Payment', pay_note: 'Payment is processed securely right here (card, Bizum, Klarna, Multibanco). You never leave the store.', continue: 'Continue to payment', edit: '← Edit my details', not_configured: 'Payment is not available right now. Please try again later.' },
 };
 
 export default function Checkout() {
@@ -19,87 +20,81 @@ export default function Checkout() {
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
     const msg = FLOW_MSG[lang] || FLOW_MSG.es;
-    const [selectedPayment, setSelectedPayment] = useState('card');
     const [saveInfo, setSaveInfo] = useState(false);
     const [processing, setProcessing] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [showCheckout, setShowCheckout] = useState(false);
+    const [stripePromise, setStripePromise] = useState(null);
+    const [sessionKey, setSessionKey] = useState(0); // força remontar o checkout ao reabrir
+    const stripeRef = useRef(null);
     const canceled = searchParams.get('canceled') === '1';
     const [formData, setFormData] = useState({
-        email: '',
-        firstName: '',
-        lastName: '',
-        address: '',
-        zip: '',
-        city: ''
+        email: '', firstName: '', lastName: '', address: '', zip: '', city: ''
     });
 
-    // Load saved info on mount
+    // Carrega dados salvos
     useEffect(() => {
         const saved = localStorage.getItem('beauthe_checkout_info');
         if (saved) {
-            const parsed = JSON.parse(saved);
-            setFormData(parsed.formData || {});
-            setSelectedPayment(parsed.selectedPayment || 'card');
-            setSaveInfo(true);
+            try { const parsed = JSON.parse(saved); setFormData(parsed.formData || {}); setSaveInfo(true); } catch { /* ignore */ }
         }
     }, []);
 
-    // Save info when fields change and saveInfo is true
+    // Persiste dados quando "guardar" está ligado
     useEffect(() => {
-        if (saveInfo) {
-            localStorage.setItem('beauthe_checkout_info', JSON.stringify({ formData, selectedPayment }));
-        } else {
-            localStorage.removeItem('beauthe_checkout_info');
-        }
-    }, [formData, selectedPayment, saveInfo]);
+        if (saveInfo) localStorage.setItem('beauthe_checkout_info', JSON.stringify({ formData }));
+        else localStorage.removeItem('beauthe_checkout_info');
+    }, [formData, saveInfo]);
 
-    const handleInputChange = (field, value) => {
-        setFormData(prev => ({ ...prev, [field]: value }));
+    const handleInputChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
+
+    // Carrega o Stripe.js com a publishable key vinda do backend (uma vez).
+    const ensureStripe = async () => {
+        if (stripeRef.current) return stripeRef.current;
+        const cfg = await fetch(`${API}/checkout/config`).then(r => r.json()).catch(() => ({}));
+        if (!cfg.publishableKey) return null;
+        stripeRef.current = loadStripe(cfg.publishableKey);
+        return stripeRef.current;
     };
 
-    const handlePlaceOrder = async () => {
+    // O EmbeddedCheckoutProvider chama isto para criar a sessão e obter o client_secret.
+    const fetchClientSecret = useCallback(async () => {
+        const res = await fetch(`${API}/checkout/create-session`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                lang,
+                items: cartItems.map((i) => ({ id: i.id, quantity: i.quantity })),
+                customer: {
+                    email: formData.email, firstName: formData.firstName, lastName: formData.lastName,
+                    address: formData.address, zip: formData.zip, city: formData.city,
+                    country: lang === 'pt' ? 'PT' : 'ES',
+                },
+            }),
+        });
+        const data = await res.json().catch(() => ({}));
+        if (!res.ok || !data.client_secret) throw new Error(data.error || msg.generic);
+        return data.client_secret;
+    }, [cartItems, formData, lang, msg.generic]);
+
+    const handleContinue = async () => {
         setErrorMsg('');
         if (!cartItems.length) { setErrorMsg(msg.empty); return; }
         const required = ['email', 'firstName', 'address', 'zip', 'city'];
         if (required.some((f) => !String(formData[f] || '').trim())) { setErrorMsg(msg.missing); return; }
         setProcessing(true);
         try {
-            const res = await fetch(`${API}/checkout/create-session`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    lang,
-                    items: cartItems.map((i) => ({ id: i.id, quantity: i.quantity })),
-                    customer: {
-                        email: formData.email,
-                        firstName: formData.firstName,
-                        lastName: formData.lastName,
-                        address: formData.address,
-                        zip: formData.zip,
-                        city: formData.city,
-                        country: lang === 'pt' ? 'PT' : 'ES',
-                    },
-                }),
-            });
-            const data = await res.json().catch(() => ({}));
-            if (!res.ok || !data.url) { setErrorMsg(data.error || msg.generic); setProcessing(false); return; }
-            window.location.href = data.url; // Stripe Checkout (hosted)
+            const sp = await ensureStripe();
+            if (!sp) { setErrorMsg(msg.not_configured); setProcessing(false); return; }
+            setStripePromise(sp);
+            setSessionKey((k) => k + 1);
+            setShowCheckout(true);
         } catch {
             setErrorMsg(msg.generic);
+        } finally {
             setProcessing(false);
         }
     };
-
-    const paymentMethods = [
-        { id: 'card', name: t('checkout.payments.card'), icon: <CreditCard size={20} /> },
-        { id: 'paypal', name: t('checkout.payments.paypal'), icon: <span className="font-bold text-blue-800">PayPal</span> },
-        { id: 'klarna', name: t('checkout.payments.klarna'), icon: <span className="font-bold text-pink-500">Klarna.</span> },
-        ...(lang === 'es' ? [{ id: 'bizum', name: t('checkout.payments.bizum'), icon: <div className="w-5 h-5 rounded-full bg-[#00AAFF] flex items-center justify-center text-[8px] text-white font-bold">B</div> }] : []),
-        ...(lang === 'pt' ? [
-            { id: 'mbway', name: t('checkout.payments.mbway'), icon: <div className="w-5 h-5 rounded-full bg-red-600 flex items-center justify-center text-[8px] text-white font-bold">MB</div> },
-            { id: 'multibanco', name: t('checkout.payments.multibanco'), icon: <div className="w-5 h-5 bg-blue-900 flex items-center justify-center text-[8px] text-white font-bold px-1">MB</div> }
-        ] : [])
-    ];
 
     if (cartItems.length === 0) {
         return (
@@ -138,100 +133,67 @@ export default function Checkout() {
                         <h2 className="text-3xl font-bold text-[#2C2826] tracking-tight mb-8">
                             {t('checkout.shipping_address')}
                         </h2>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div className="md:col-span-2">
-                                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.email')}</label>
-                                <input
-                                    type="email"
-                                    value={formData.email}
-                                    onChange={(e) => handleInputChange('email', e.target.value)}
-                                    className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors"
-                                    placeholder="email@example.com"
-                                />
+                        <fieldset disabled={showCheckout} className={showCheckout ? 'opacity-60' : ''}>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div className="md:col-span-2">
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.email')}</label>
+                                    <input type="email" value={formData.email} onChange={(e) => handleInputChange('email', e.target.value)} className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors" placeholder="email@example.com" />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.first_name')}</label>
+                                    <input type="text" value={formData.firstName} onChange={(e) => handleInputChange('firstName', e.target.value)} className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors" />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.last_name')}</label>
+                                    <input type="text" value={formData.lastName} onChange={(e) => handleInputChange('lastName', e.target.value)} className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors" />
+                                </div>
+                                <div className="md:col-span-2">
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.address')}</label>
+                                    <input type="text" value={formData.address} onChange={(e) => handleInputChange('address', e.target.value)} className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors" />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.zip')}</label>
+                                    <input type="text" value={formData.zip} onChange={(e) => handleInputChange('zip', e.target.value)} className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors" />
+                                </div>
+                                <div>
+                                    <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.city')}</label>
+                                    <input type="text" value={formData.city} onChange={(e) => handleInputChange('city', e.target.value)} className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors" />
+                                </div>
                             </div>
-                            <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.first_name')}</label>
-                                <input
-                                    type="text"
-                                    value={formData.firstName}
-                                    onChange={(e) => handleInputChange('firstName', e.target.value)}
-                                    className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.last_name')}</label>
-                                <input
-                                    type="text"
-                                    value={formData.lastName}
-                                    onChange={(e) => handleInputChange('lastName', e.target.value)}
-                                    className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors"
-                                />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.address')}</label>
-                                <input
-                                    type="text"
-                                    value={formData.address}
-                                    onChange={(e) => handleInputChange('address', e.target.value)}
-                                    className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.zip')}</label>
-                                <input
-                                    type="text"
-                                    value={formData.zip}
-                                    onChange={(e) => handleInputChange('zip', e.target.value)}
-                                    className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors"
-                                />
-                            </div>
-                            <div>
-                                <label className="block text-[11px] font-bold uppercase tracking-widest text-[#8A7369] mb-2">{t('checkout.fields.city')}</label>
-                                <input
-                                    type="text"
-                                    value={formData.city}
-                                    onChange={(e) => handleInputChange('city', e.target.value)}
-                                    className="w-full bg-white border border-[#F1EBE6] rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-[#C4A49A] transition-colors"
-                                />
-                            </div>
-                        </div>
 
-                        <div className="mt-8 flex items-center gap-3">
-                            <button
-                                onClick={() => setSaveInfo(!saveInfo)}
-                                className={`w-12 h-6 rounded-full transition-colors relative ${saveInfo ? 'bg-[#C4A49A]' : 'bg-[#EBE1DA]'}`}
-                            >
-                                <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${saveInfo ? 'translate-x-6' : ''}`} />
-                            </button>
-                            <span className="text-[13px] text-[#5C534F] font-medium">{t('checkout.save_info')}</span>
-                        </div>
+                            <div className="mt-8 flex items-center gap-3">
+                                <button type="button" onClick={() => setSaveInfo(!saveInfo)} className={`w-12 h-6 rounded-full transition-colors relative ${saveInfo ? 'bg-[#C4A49A]' : 'bg-[#EBE1DA]'}`}>
+                                    <div className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform ${saveInfo ? 'translate-x-6' : ''}`} />
+                                </button>
+                                <span className="text-[13px] text-[#5C534F] font-medium">{t('checkout.save_info')}</span>
+                            </div>
+                        </fieldset>
                     </section>
 
                     <section>
-                        <h2 className="text-3xl font-bold text-[#2C2826] tracking-tight mb-8">
-                            {t('checkout.payment_method')}
-                        </h2>
-                        <div className="space-y-4">
-                            {paymentMethods.map((method) => (
-                                <div
-                                    key={method.id}
-                                    onClick={() => setSelectedPayment(method.id)}
-                                    className={`flex items-center justify-between p-5 rounded-2xl border-2 cursor-pointer transition-all duration-300
-                                        ${selectedPayment === method.id ? 'border-[#C4A49A] bg-[#FAF7F5]' : 'border-[#F1EBE6] bg-white border-dashed hover:border-[#C4A49A]'}
-                                    `}
-                                >
-                                    <div className="flex items-center gap-4">
-                                        <div className={`w-5 h-5 rounded-full border flex items-center justify-center ${selectedPayment === method.id ? 'border-[#C4A49A]' : 'border-[#D1C8C4]'}`}>
-                                            {selectedPayment === method.id && <div className="w-2.5 h-2.5 rounded-full bg-[#C4A49A]" />}
-                                        </div>
-                                        <span className="text-[14px] font-bold text-[#2C2826]">{method.name}</span>
-                                    </div>
-                                    <div className="opacity-80">
-                                        {method.icon}
-                                    </div>
-                                </div>
-                            ))}
+                        <div className="flex items-center justify-between mb-8">
+                            <h2 className="text-3xl font-bold text-[#2C2826] tracking-tight">{msg.pay_title}</h2>
+                            {showCheckout && (
+                                <button type="button" onClick={() => setShowCheckout(false)} className="text-[11px] font-bold uppercase tracking-widest text-[#8A7369] hover:text-[#2C2826] transition-colors">
+                                    {msg.edit}
+                                </button>
+                            )}
                         </div>
+
+                        {!showCheckout ? (
+                            <div className="flex items-start gap-3 rounded-2xl border border-dashed border-[#E4D8D0] bg-[#FCFAF8] px-5 py-5 text-[13px] text-[#5C534F] leading-relaxed">
+                                <Lock size={18} className="shrink-0 mt-0.5 text-[#C4A49A]" />
+                                <span>{msg.pay_note}</span>
+                            </div>
+                        ) : (
+                            <div className="rounded-2xl border border-[#F1EBE6] bg-white p-2 md:p-4 min-h-[300px]">
+                                {stripePromise && (
+                                    <EmbeddedCheckoutProvider key={sessionKey} stripe={stripePromise} options={{ fetchClientSecret }}>
+                                        <EmbeddedCheckout />
+                                    </EmbeddedCheckoutProvider>
+                                )}
+                            </div>
+                        )}
                     </section>
                 </div>
 
@@ -278,18 +240,17 @@ export default function Checkout() {
                             </div>
                         )}
 
-                        <button
-                            onClick={handlePlaceOrder}
-                            disabled={processing}
-                            className="w-full bg-[#2C2826] text-white rounded-2xl py-5 text-[13px] font-bold uppercase tracking-widest hover:bg-[#C4A49A] transition-all shadow-2xl flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
-                        >
-                            {processing ? <><Loader2 size={18} className="animate-spin" /> {msg.processing}</> : <><ShieldCheck size={18} /> {t('checkout.place_order')}</>}
-                        </button>
+                        {!showCheckout && (
+                            <button
+                                onClick={handleContinue}
+                                disabled={processing}
+                                className="w-full bg-[#2C2826] text-white rounded-2xl py-5 text-[13px] font-bold uppercase tracking-widest hover:bg-[#C4A49A] transition-all shadow-2xl flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                            >
+                                {processing ? <><Loader2 size={18} className="animate-spin" /> {msg.loading}</> : <><ShieldCheck size={18} /> {msg.continue}</>}
+                            </button>
+                        )}
 
-                        <p className="text-center text-[10px] text-[#A69B97] mt-4 leading-relaxed opacity-90">
-                            {msg.redirect_note}
-                        </p>
-                        <p className="text-center text-[10px] text-[#A69B97] mt-2 leading-relaxed opacity-80 uppercase tracking-widest font-bold">
+                        <p className="text-center text-[10px] text-[#A69B97] mt-4 leading-relaxed opacity-80 uppercase tracking-widest font-bold">
                             {t('checkout.secure')} <br /> {t('checkout.returns_guarantee')}
                         </p>
                     </div>

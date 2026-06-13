@@ -1,4 +1,4 @@
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // --- ORDERS (Legacy Local Mock for Logistics) ---
 const INITIAL_ORDERS = [

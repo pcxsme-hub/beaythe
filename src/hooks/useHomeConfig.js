@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-const API_URL = 'http://localhost:3000/api';
+const API_URL = '/api';
 
 // Singleton-style cache so multiple components don't double-fetch on the same page.
 let cached = null;
