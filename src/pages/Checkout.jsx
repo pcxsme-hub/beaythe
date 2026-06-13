@@ -14,8 +14,10 @@ const FLOW_MSG = {
     en: { loading: 'Loading secure payment…', missing: 'Please fill in email, name, address, ZIP code and city.', generic: 'Could not start the payment. Please try again.', empty: 'Your cart is empty.', canceled: 'Payment canceled. Your cart is intact, you can try again.', pay_title: 'Payment', pay_note: 'Payment is processed securely right here (card, Bizum, Klarna, Multibanco). You never leave the store.', continue: 'Continue to payment', edit: '← Edit my details', not_configured: 'Payment is not available right now. Please try again later.' },
 };
 
+const itemPrice = (p) => (typeof p === 'string' ? parseFloat(p.replace(',', '.')) : Number(p)) || 0;
+
 export default function Checkout() {
-    const { cartItems, getCartTotal } = useCart();
+    const { cartItems } = useCart();
     const { t, lang } = useLanguage();
     const navigate = useNavigate();
     const [searchParams] = useSearchParams();
@@ -107,7 +109,7 @@ export default function Checkout() {
         );
     }
 
-    const total = Number(getCartTotal()) || 0;
+    const total = cartItems.reduce((sum, it) => sum + itemPrice(it.price) * (Number(it.quantity) || 0), 0);
 
     return (
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
@@ -212,7 +214,7 @@ export default function Checkout() {
                                     </div>
                                     <div className="flex flex-col justify-center">
                                         <h4 className="text-[13px] font-bold text-[#2C2826] leading-tight mb-1 uppercase tracking-tight">{item.name}</h4>
-                                        <p className="text-[11px] text-[#8A7369] uppercase font-bold tracking-widest">{item.quantity} x {Number(item.price || 0).toFixed(2)} {t('currency')}</p>
+                                        <p className="text-[11px] text-[#8A7369] uppercase font-bold tracking-widest">{item.quantity} x {itemPrice(item.price).toFixed(2)} {t('currency')}</p>
                                     </div>
                                 </div>
                             ))}
