@@ -7,7 +7,9 @@
     "dev": "vite",
     "build": "vite build",
     "lint": "eslint .",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "deploy:worker": "npx wrangler deploy -c wrangler.worker.jsonc",
+    "worker:tail": "npx wrangler tail -c wrangler.worker.jsonc"
   },
   "dependencies": {
     "@tailwindcss/vite": "^4.2.2",

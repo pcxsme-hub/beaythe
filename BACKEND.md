@@ -46,6 +46,9 @@ npx wrangler delete beauthe-api
   `/request-reset` · `/reset-password` · `/verify-email` · `/resend-verification` (tabela `User`).
 - **CMS:** `/api/theme` · `/nav` · `/home` · `/site-copy` · `/settings` · `/products` ·
   `/marketing/coupons` · `/marketing/banners` · `/landing/*`. Reads públicos; writes exigem admin.
+- **Checkout/Pagamento (Stripe):** `/api/checkout/create-session` (POST, público) ·
+  `/api/checkout/webhook` (POST, assinado pelo Stripe) · `/api/orders/:code` (GET, público) ·
+  `/api/admin/orders` (GET) · `/api/admin/orders/:id/status` (POST). Ver **`CHECKOUT.md`**.
 
 ## Ver/gerenciar usuários
 Painel Cloudflare → **D1 → beauthe-db → Console**:
@@ -55,6 +58,11 @@ SELECT id, email, name, email_verified, createdAt FROM User;          -- cliente
 ```
 
 ## Pendências conhecidas
+- **Pagamento (Stripe) — setar secrets p/ vender:** `STRIPE_SECRET_KEY` e `STRIPE_WEBHOOK_SECRET`.
+  Sem eles, `create-session` responde 503 ("configura STRIPE_SECRET_KEY") e nenhuma compra é
+  cobrada. Passo-a-passo completo em **`CHECKOUT.md`**. (Front da loja no ar só passa a ter o
+  botão funcional após republicar o storefront a partir deste repo — fonte do front em produção
+  foi perdido; o Worker/API fica 100% funcional só com o deploy + secrets.)
 - **Segredos do Worker não setados:** `ENCRYPTION_KEY` (criptografa `User.email_enc` p/ RGPD)
   e `BREVO_API_KEY`/`EMAIL_FROM` (envio de e-mail de verificação/recuperação do cliente).
   Sem eles, o cadastro de cliente funciona mas o e-mail de verificação não é enviado e o

@@ -2,15 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useCart } from '../context/CartContext';
 import { useLanguage } from '../context/LanguageContext';
-import { ChevronLeft, CreditCard, ShieldCheck } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
+import { ChevronLeft, CreditCard, ShieldCheck, Loader2, AlertCircle } from 'lucide-react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+
+const API = '/api';
+// Mensagens do fluxo de pagamento (não existem no dicionário global).
+const FLOW_MSG = {
+    es: { processing: 'Redirigiendo al pago seguro…', missing: 'Completa email, nombre, dirección, código postal y ciudad.', generic: 'No se pudo iniciar el pago. Inténtalo de nuevo.', empty: 'Tu carrito está vacío.', canceled: 'Pago cancelado. Tu carrito sigue intacto, puedes intentarlo de nuevo.', redirect_note: 'Te llevaremos a una página de pago segura de Stripe.' },
+    pt: { processing: 'A redirecionar para o pagamento seguro…', missing: 'Preencha email, nome, morada, código postal e cidade.', generic: 'Não foi possível iniciar o pagamento. Tente de novo.', empty: 'O seu carrinho está vazio.', canceled: 'Pagamento cancelado. O seu carrinho continua intacto, pode tentar de novo.', redirect_note: 'Vamos levá-lo a uma página de pagamento segura da Stripe.' },
+    en: { processing: 'Redirecting to secure payment…', missing: 'Please fill in email, name, address, ZIP code and city.', generic: 'Could not start the payment. Please try again.', empty: 'Your cart is empty.', canceled: 'Payment canceled. Your cart is intact, you can try again.', redirect_note: 'You will be taken to a secure Stripe payment page.' },
+};
 
 export default function Checkout() {
     const { cartItems, getCartTotal } = useCart();
     const { t, lang } = useLanguage();
     const navigate = useNavigate();
+    const [searchParams] = useSearchParams();
+    const msg = FLOW_MSG[lang] || FLOW_MSG.es;
     const [selectedPayment, setSelectedPayment] = useState('card');
     const [saveInfo, setSaveInfo] = useState(false);
+    const [processing, setProcessing] = useState(false);
+    const [errorMsg, setErrorMsg] = useState('');
+    const canceled = searchParams.get('canceled') === '1';
     const [formData, setFormData] = useState({
         email: '',
         firstName: '',
@@ -42,6 +55,39 @@ export default function Checkout() {
 
     const handleInputChange = (field, value) => {
         setFormData(prev => ({ ...prev, [field]: value }));
+    };
+
+    const handlePlaceOrder = async () => {
+        setErrorMsg('');
+        if (!cartItems.length) { setErrorMsg(msg.empty); return; }
+        const required = ['email', 'firstName', 'address', 'zip', 'city'];
+        if (required.some((f) => !String(formData[f] || '').trim())) { setErrorMsg(msg.missing); return; }
+        setProcessing(true);
+        try {
+            const res = await fetch(`${API}/checkout/create-session`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    lang,
+                    items: cartItems.map((i) => ({ id: i.id, quantity: i.quantity })),
+                    customer: {
+                        email: formData.email,
+                        firstName: formData.firstName,
+                        lastName: formData.lastName,
+                        address: formData.address,
+                        zip: formData.zip,
+                        city: formData.city,
+                        country: lang === 'pt' ? 'PT' : 'ES',
+                    },
+                }),
+            });
+            const data = await res.json().catch(() => ({}));
+            if (!res.ok || !data.url) { setErrorMsg(data.error || msg.generic); setProcessing(false); return; }
+            window.location.href = data.url; // Stripe Checkout (hosted)
+        } catch {
+            setErrorMsg(msg.generic);
+            setProcessing(false);
+        }
     };
 
     const paymentMethods = [
@@ -77,6 +123,13 @@ export default function Checkout() {
                 <ChevronLeft size={16} className="group-hover:-translate-x-1 transition-transform" />
                 {t('checkout.back_to_cart')}
             </button>
+
+            {canceled && (
+                <div className="mb-8 flex items-start gap-2 rounded-2xl bg-[#FBF3E9] border border-[#E9D7C1] px-5 py-4 text-[13px] text-[#8A6A3B] font-medium">
+                    <AlertCircle size={18} className="shrink-0 mt-0.5" />
+                    <span>{msg.canceled}</span>
+                </div>
+            )}
 
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
                 {/* Left Column: Forms */}
@@ -218,12 +271,25 @@ export default function Checkout() {
                             </div>
                         </div>
 
-                        <button className="w-full bg-[#2C2826] text-white rounded-2xl py-5 text-[13px] font-bold uppercase tracking-widest hover:bg-[#C4A49A] transition-all shadow-2xl flex items-center justify-center gap-3">
-                            <ShieldCheck size={18} />
-                            {t('checkout.place_order')}
+                        {errorMsg && (
+                            <div className="mb-4 flex items-start gap-2 rounded-xl bg-[#FBEDEA] border border-[#E9C9C1] px-4 py-3 text-[12px] text-[#9B3B2A] font-medium">
+                                <AlertCircle size={16} className="shrink-0 mt-0.5" />
+                                <span>{errorMsg}</span>
+                            </div>
+                        )}
+
+                        <button
+                            onClick={handlePlaceOrder}
+                            disabled={processing}
+                            className="w-full bg-[#2C2826] text-white rounded-2xl py-5 text-[13px] font-bold uppercase tracking-widest hover:bg-[#C4A49A] transition-all shadow-2xl flex items-center justify-center gap-3 disabled:opacity-60 disabled:cursor-not-allowed"
+                        >
+                            {processing ? <><Loader2 size={18} className="animate-spin" /> {msg.processing}</> : <><ShieldCheck size={18} /> {t('checkout.place_order')}</>}
                         </button>
 
-                        <p className="text-center text-[10px] text-[#A69B97] mt-6 leading-relaxed opacity-80 uppercase tracking-widest font-bold">
+                        <p className="text-center text-[10px] text-[#A69B97] mt-4 leading-relaxed opacity-90">
+                            {msg.redirect_note}
+                        </p>
+                        <p className="text-center text-[10px] text-[#A69B97] mt-2 leading-relaxed opacity-80 uppercase tracking-widest font-bold">
                             {t('checkout.secure')} <br /> {t('checkout.returns_guarantee')}
                         </p>
                     </div>

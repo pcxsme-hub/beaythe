@@ -28,6 +28,7 @@ import Marketing from './admin/pages/Marketing';
 import Categoria from './pages/Categoria';
 import SearchResults from './pages/SearchResults';
 import Checkout from './pages/Checkout';
+import CheckoutSuccess from './pages/CheckoutSuccess';
 import Producto from './pages/Producto';
 import Profile from './pages/Profile';
 import Ajuda from './pages/Ajuda';
@@ -108,6 +109,7 @@ function App() {
           <Route path="/categoria/:slug" element={<Categoria />} />
           <Route path="/search" element={<SearchResults />} />
           <Route path="/checkout" element={<Checkout />} />
+          <Route path="/checkout/success" element={<CheckoutSuccess />} />
           <Route path="/ajuda" element={<Ajuda />} />
           <Route path="/faq" element={<FAQPage />} />
         </Routes>
