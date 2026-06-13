@@ -28,7 +28,9 @@ export default function Checkout() {
     const [showCheckout, setShowCheckout] = useState(false);
     const [stripePromise, setStripePromise] = useState(null);
     const [sessionKey, setSessionKey] = useState(0); // força remontar o checkout ao reabrir
+    const [shipping, setShipping] = useState(0);
     const stripeRef = useRef(null);
+    const pubKeyRef = useRef(null);
     const canceled = searchParams.get('canceled') === '1';
     const [formData, setFormData] = useState({
         email: '', firstName: '', lastName: '', address: '', zip: '', city: ''
@@ -50,12 +52,24 @@ export default function Checkout() {
 
     const handleInputChange = (field, value) => setFormData(prev => ({ ...prev, [field]: value }));
 
-    // Carrega o Stripe.js com a publishable key vinda do backend (uma vez).
+    // Config pública do checkout (publishable key + frete) — uma vez ao montar.
+    useEffect(() => {
+        let alive = true;
+        fetch(`${API}/checkout/config`).then(r => r.json()).then(cfg => {
+            if (!alive) return;
+            setShipping(Number(cfg.shipping) || 0);
+            pubKeyRef.current = cfg.publishableKey || null;
+        }).catch(() => {});
+        return () => { alive = false; };
+    }, []);
+
+    // Carrega o Stripe.js com a publishable key vinda do backend.
     const ensureStripe = async () => {
         if (stripeRef.current) return stripeRef.current;
-        const cfg = await fetch(`${API}/checkout/config`).then(r => r.json()).catch(() => ({}));
-        if (!cfg.publishableKey) return null;
-        stripeRef.current = loadStripe(cfg.publishableKey);
+        let pk = pubKeyRef.current;
+        if (!pk) { const cfg = await fetch(`${API}/checkout/config`).then(r => r.json()).catch(() => ({})); pk = cfg.publishableKey; }
+        if (!pk) return null;
+        stripeRef.current = loadStripe(pk);
         return stripeRef.current;
     };
 
@@ -109,7 +123,8 @@ export default function Checkout() {
         );
     }
 
-    const total = cartItems.reduce((sum, it) => sum + itemPrice(it.price) * (Number(it.quantity) || 0), 0);
+    const subtotal = cartItems.reduce((sum, it) => sum + itemPrice(it.price) * (Number(it.quantity) || 0), 0);
+    const total = subtotal + (Number(shipping) || 0);
 
     return (
         <div className="max-w-[1240px] mx-auto px-4 sm:px-6 lg:px-8 py-12 md:py-20">
@@ -223,11 +238,13 @@ export default function Checkout() {
                         <div className="space-y-4 mb-10 pt-6 border-t border-[#F1EBE6]">
                             <div className="flex justify-between text-sm text-[#8A7369]">
                                 <span>{t('cart.subtotal')}</span>
-                                <span>{total.toFixed(2)} {t('currency')}</span>
+                                <span>{subtotal.toFixed(2)} {t('currency')}</span>
                             </div>
                             <div className="flex justify-between text-sm text-[#8A7369]">
                                 <span>{t('cart.shipping')}</span>
-                                <span className="text-[#359C5F] font-bold uppercase tracking-widest text-[10px]">{t('checkout.free_shipping')}</span>
+                                {shipping > 0
+                                    ? <span>{shipping.toFixed(2)} {t('currency')}</span>
+                                    : <span className="text-[#359C5F] font-bold uppercase tracking-widest text-[10px]">{t('checkout.free_shipping')}</span>}
                             </div>
                             <div className="flex justify-between text-xl font-bold text-[#2C2826] pt-4 border-t border-[#F1EBE6]">
                                 <span>{t('cart.total')}</span>

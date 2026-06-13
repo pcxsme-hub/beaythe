@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { ScanLine, RefreshCw, CheckCircle2, AlertTriangle, Lock, Slash, HelpCircle, Wand2, Search } from 'lucide-react';
-import { getPriceAudit, setProductPrice } from '../services/db';
+import { ScanLine, RefreshCw, CheckCircle2, AlertTriangle, Lock, Slash, HelpCircle, Wand2, Search, RotateCcw } from 'lucide-react';
+import { getPriceAudit, setProductPrice, repriceCatalog } from '../services/db';
 
 const eur = (n) => (n == null ? '—' : (Number(n) || 0).toLocaleString('pt-PT', { style: 'currency', currency: 'EUR' }));
 
@@ -82,6 +82,16 @@ export default function PriceAudit() {
         reload();
     };
 
+    const repriceAll = async () => {
+        if (!window.confirm('Reprecificar TODOS os produtos Dropea pela regra atual (Custo × (1+margem), sem frete)? Isso atualiza os preços do site e não mexe nos preços manuais.')) return;
+        setBusy('reprice');
+        const res = await repriceCatalog();
+        setBusy(null);
+        if (!res || res.error) { alert('Falha ao reprecificar: ' + (res?.error || 'erro')); return; }
+        alert(`Reprecificados: ${res.updated} · já corretos: ${res.unchanged} · sem custo na Dropea: ${res.skipped}`);
+        reload();
+    };
+
     const offCount = summary.off || 0;
 
     return (
@@ -94,13 +104,16 @@ export default function PriceAudit() {
                     </h1>
                     <p className="text-gray-500 mt-2 text-lg">Verifica se cada produto segue a regra do Motor de Preços, usando o custo atual da Dropea.</p>
                     <code className="inline-block mt-3 text-xs bg-gray-900 text-rose-300 px-3 py-1.5 rounded-lg font-mono">
-                        Preço = (Custo + {settings.shipping}€) × (1 + {settings.margin}/100)
+                        Preço = Custo × (1 + {settings.margin}/100) · frete {eur(settings.shipping)} no checkout
                     </code>
                 </div>
                 <div className="flex items-center gap-2">
+                    <button onClick={repriceAll} disabled={busy} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 transition-colors disabled:opacity-50">
+                        <RotateCcw size={16} className={busy === 'reprice' ? 'animate-spin' : ''} /> Reprecificar catálogo
+                    </button>
                     {offCount > 0 && (
-                        <button onClick={fixAllOff} disabled={busy} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-rose-500 text-white text-sm font-bold hover:bg-rose-600 transition-colors disabled:opacity-50">
-                            <Wand2 size={16} /> Corrigir {offCount} fora do padrão
+                        <button onClick={fixAllOff} disabled={busy} className="flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-sm font-bold text-gray-700 hover:border-gray-900 transition-colors disabled:opacity-50">
+                            <Wand2 size={16} /> Corrigir {offCount} fora
                         </button>
                     )}
                     <button onClick={reload} disabled={busy} className="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-bold hover:bg-gray-700 transition-colors disabled:opacity-50">

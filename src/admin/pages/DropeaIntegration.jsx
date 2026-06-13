@@ -167,7 +167,7 @@ export default function DropeaIntegration() {
                     </div>
                     <div>
                         <h2 className="font-bold text-xl tracking-wide">Motor de Preços</h2>
-                        <p className="text-gray-400 text-sm font-mono mt-1">Preço Venda = (Custo + Env Fixo) * (1 + Margem/100)</p>
+                        <p className="text-gray-400 text-sm font-mono mt-1">Preço Venda = Custo * (1 + Margem/100) <span className="text-gray-500">· frete cobrado no checkout</span></p>
                     </div>
                 </div>
                 <div className="flex flex-wrap items-end gap-6 relative z-10 w-full md:w-auto">
@@ -181,7 +181,7 @@ export default function DropeaIntegration() {
                         />
                     </div>
                     <div>
-                        <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">+ Frete Fixo (€)</label>
+                        <label className="block text-xs font-bold text-gray-400 mb-2 uppercase tracking-widest">Frete checkout (€)</label>
                         <input
                             type="number"
                             value={shipping}

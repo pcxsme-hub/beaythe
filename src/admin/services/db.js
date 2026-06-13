@@ -74,6 +74,16 @@ export const setProductPrice = async (id, price) => {
     }
 };
 
+// Reprecifica todo o catálogo pela regra atual (Custo Dropea * (1+margem)), sem mexer em manual_price.
+export const repriceCatalog = async () => {
+    try {
+        const res = await fetch(`${API_URL}/admin/reprice`, { method: 'POST', credentials: 'include' });
+        return res.json();
+    } catch (e) {
+        return { error: String(e) };
+    }
+};
+
 // --- PRODUCTS (Real Node API) ---
 export const getProducts = async () => {
     try {
