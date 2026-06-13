@@ -48,6 +48,32 @@ export const updateSalesOrderStatus = async (id, status) => {
     }
 };
 
+// --- PRICE AUDIT (Real API — compara preço vs regra usando custo da Dropea) ---
+export const getPriceAudit = async () => {
+    try {
+        const res = await fetch(`${API_URL}/admin/price-audit`, { cache: 'no-store', credentials: 'include' });
+        if (!res.ok) return { error: `HTTP ${res.status}`, rows: [], summary: {} };
+        return await res.json();
+    } catch (e) {
+        return { error: String(e), rows: [], summary: {} };
+    }
+};
+
+// Aplica um preço a um produto (corrige para o preço esperado da regra).
+export const setProductPrice = async (id, price) => {
+    try {
+        const res = await fetch(`${API_URL}/products/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify({ price }),
+        });
+        return res.json();
+    } catch (e) {
+        return { error: String(e) };
+    }
+};
+
 // --- PRODUCTS (Real Node API) ---
 export const getProducts = async () => {
     try {
